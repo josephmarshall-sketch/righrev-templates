@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSYS — RightRev</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rr-dark: #1A3D2B; --rr-mid: #2A5C3F; --rr-accent: #4CAF7D;
+    --rr-light: #EAF3DE; --rr-border: #C0DD97; --rr-text-green: #27500A;
+    --gray-50: #F8F9F8; --gray-100: #F0F2F0; --gray-200: #E2E5E2;
+    --gray-400: #8A9189; --gray-700: #3D4340; --gray-900: #1C1F1C;
+  }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #F8F9F8; padding: 32px 24px; }
+  .page { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .s-header { background: var(--rr-dark); border-radius: 14px; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .ae-photo { width: 64px; height: 64px; border-radius: 50%; background: var(--rr-mid); border: 2px solid var(--rr-accent); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: var(--rr-accent); flex-shrink: 0; }
+  .ae-name { font-size: 17px; font-weight: 600; color: #fff; }
+  .ae-role { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .pers-note { font-size: 14px; color: rgba(255,255,255,0.75); text-align: right; font-style: italic; max-width: 260px; line-height: 1.5; }
+  .consult-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--rr-accent); color: var(--rr-dark); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; }
+  .s-account { background: #fff; border: 1px solid var(--gray-200); border-radius: 14px; padding: 24px 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+  .acct-left { display: flex; align-items: flex-start; gap: 14px; }
+  .acct-logo { width: 52px; height: 52px; border-radius: 10px; background: var(--gray-100); border: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gray-400); text-align: center; flex-shrink: 0; }
+  .acct-name { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+  .acct-sub { font-size: 13px; color: var(--gray-400); margin-top: 3px; }
+  .acct-right { text-align: right; }
+  .prospect-name { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+  .prospect-title { font-size: 13px; color: var(--gray-400); margin-top: 3px; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+  .s-opps { background: #fff; border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px 28px; }
+  .opps-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .opp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--gray-200); padding: 16px 0; align-items: start; }
+  .opp-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .opp-row:first-child { padding-top: 0; }
+  .opp-left { display: flex; align-items: flex-start; gap: 10px; padding-right: 20px; }
+  .opp-right { padding-left: 20px; border-left: 1px solid var(--gray-200); }
+  .opp-num { width: 24px; height: 24px; border-radius: 50%; background: var(--rr-dark); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .opp-signal-type { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-mid); margin-bottom: 3px; }
+  .opp-title { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.4; }
+  .opp-copy { font-size: 13px; color: var(--gray-400); line-height: 1.55; }
+  .s-helps { border: 1px solid var(--gray-200); border-radius: 14px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
+  .helps-left { padding: 24px; border-right: 1px solid var(--gray-200); }
+  .helps-right { padding: 24px; background: var(--gray-50); }
+  .helps-title { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 14px; }
+  .challenge { padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+  .challenge:last-child { border-bottom: none; }
+  .ch-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-mid); margin-bottom: 3px; }
+  .ch-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .story-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 9px; padding: 13px; margin-bottom: 8px; }
+  .story-card:last-child { margin-bottom: 0; }
+  .story-co { font-size: 11px; font-weight: 700; color: var(--rr-mid); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .story-match { font-size: 11px; font-weight: 600; color: var(--rr-text-green); background: var(--rr-light); border: 1px solid var(--rr-border); border-radius: 4px; padding: 2px 8px; display: inline-block; margin: 4px 0 6px; }
+  .story-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .story-link { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--rr-mid); text-decoration: none; }
+  .s-footer { background: var(--rr-dark); border-radius: 14px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .footer-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-accent); margin-bottom: 6px; }
+  .footer-headline { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 5px; }
+  .footer-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+  .btn-primary { background: var(--rr-accent); color: var(--rr-dark); font-size: 13px; font-weight: 700; padding: 11px 22px; border-radius: 8px; border: none; cursor: pointer; }
+  .btn-ghost { background: transparent; color: #fff; font-size: 12px; font-weight: 500; padding: 9px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="s-header">
+    <div class="header-left">
+      <div class="ae-photo">CO</div>
+      <div>
+        <div class="ae-name">Carolyn Orfanos</div>
+        <div class="ae-role">Account Executive · RightRev</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="pers-note">"With the Synopsys acquisition closing and an ERP upgrade underway, the timing to get revenue recognition right — across Elastic licensing, HPC consumption, and services — couldn't be more critical."</div>
+      <a class="consult-btn" href="#">Book time with me</a>
+    </div>
+  </div>
+  <div class="s-account">
+    <div class="acct-left">
+      <div class="acct-logo">ANSYS</div>
+      <div>
+        <div class="acct-name">ANSYS</div>
+        <div class="acct-sub">Simulation Software · Canonsburg, PA</div>
+      </div>
+    </div>
+    <div class="acct-right">
+      <div class="prospect-name"></div>
+      <div class="prospect-title"></div>
+    </div>
+  </div>
+  <div class="s-opps">
+    <div class="opps-header">
+      <div class="section-label" style="margin-bottom:0">Areas of growth and complexity</div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">1</div><div><div class="opp-signal-type">OPEN REV REC JOBS</div><div class="opp-title">Hiring a Revenue Recognition Director signals that current ASC 606 processes can't scale to the post-acquisition complexity.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">The newly posted Revenue Recognition Director role (May 29, 2026) is explicitly scoped to lead ASC 606 compliance across software, semiconductor IP, and services contracts inherited through the Synopsys acquisition of ANSYS. The Director will own the revenue close, prepare quarterly packages for Big 4 auditors, and drive automation across the quote-to-cash cycle — a clear sign that today's manual processes aren't built for the combined entity's transaction volume and contract complexity.</div></div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">2</div><div><div class="opp-signal-type">ERP MIGRATION</div><div class="opp-title">An ERP upgrade mid-acquisition integration creates a dangerous window where revenue accounting can break or get rebuilt incorrectly.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">The same job posting calls out "a major ERP upgrade" happening in parallel with the ANSYS acquisition integration and the build-out of an offshore center of excellence. ERP migrations routinely expose gaps in revenue recognition logic — particularly for complex license types and consumption-based contracts — that were previously masked by manual workarounds. Getting the rev rec layer right before the ERP cutover prevents months of cleanup and audit exposure.</div></div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">3</div><div><div class="opp-signal-type">USAGE & CONSUMPTION</div><div class="opp-title">Elastic pay-per-use and HPC session-based licensing create event-driven recognition obligations that straight-line ERP logic can't handle.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">ANSYS's Elastic licensing model charges customers per analysis run based on computing capacity — cores, GCUs, and GPUs consumed per solver or HPC session. Each checkout event triggers a recognition obligation distinct from annual or perpetual license schedules. Across a growing portfolio of simulation products and cloud hardware, these high-volume metered events must be captured, allocated under ASC 606, and tied back to contracts in real time — not reconciled manually at month-end.</div></div>
+    </div>
+  </div>
+  <div class="s-helps">
+    <div class="helps-left">
+      <div class="helps-title">How RightRev solves it</div>
+      <div class="challenge"><div class="ch-label">OPEN REV REC JOBS</div><div class="ch-text">RightRev detects and reallocates revenue across SSP components the moment a contract is signed — your team gets the right numbers without touching a spreadsheet on every new deal.</div></div>
+      <div class="challenge"><div class="ch-label">ERP MIGRATION</div><div class="ch-text">When a contract is amended, co-termed, or expanded mid-cycle, RightRev recalculates and posts the updated recognition immediately — your auditors get a complete trace, no manual work required.</div></div>
+      <div class="challenge"><div class="ch-label">USAGE & CONSUMPTION</div><div class="ch-text">RightRev's billing engine tracks every usage event, credit drawdown, and overage as it happens — recognized revenue stays current without waiting for month-end reconciliation.</div></div>
+    </div>
+    <div class="helps-right">
+      <div class="helps-title">How others solved this</div>
+      <div class="story-card" id="story-1"><div class="story-co" id="story-1-co"></div><div class="story-match" id="story-1-match"></div><div class="story-text" id="story-1-text"></div><a class="story-link" id="story-1-link" target="_blank">Read the full story →</a></div>
+      <div class="story-card" id="story-2"><div class="story-co"
