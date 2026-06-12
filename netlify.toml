@@ -1,6 +1,10 @@
 [functions]
   directory = "functions"
-  node_bundler = "esbuild"
 
-[functions."generate-page"]
+[functions."generate-page-background"]
   timeout = 120
+
+[[redirects]]
+  from = "/:slug"
+  to = "/accounts/:slug/index.html"
+  status = 200
