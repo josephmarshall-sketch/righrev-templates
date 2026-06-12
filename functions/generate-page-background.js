@@ -188,7 +188,7 @@ exports.handler = async (event) => {
   }
 
   const accountData = JSON.stringify(data);
-  const slug = (data.account_name || data.company_name || 'account')
+const slug = (data['account name'] || data.account_name || data.company_name || 'account')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
