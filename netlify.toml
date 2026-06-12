@@ -1,2 +1,6 @@
 [functions]
   directory = "functions"
+  node_bundler = "esbuild"
+
+[functions."generate-page"]
+  timeout = 120
