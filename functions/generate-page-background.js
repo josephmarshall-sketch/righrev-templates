@@ -168,14 +168,17 @@ const TEMPLATE = `<!DOCTYPE html>
 </body>
 </html>`;
 
+const GITHUB_OWNER = 'josephmarshall-sketch';
+const GITHUB_REPO = 'righrev-templates';
+const GITHUB_BRANCH = 'main';
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-  const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
-  const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
   let data;
   try {
@@ -192,51 +195,68 @@ exports.handler = async (event) => {
 
   const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
 
-  // Respond to Clay immediately to avoid timeout
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({ status: 'processing', url: pageUrl, slug })
-  };
+  // Call Claude
+  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
+      system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.\n\nPLACEHOLDER RULES:\n- {{AE_NAME}} — RightRev rep full name\n- {{AE_INITIALS}} — first and last initial (e.g. JS)\n- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from AE to prospect\n- {{ACCOUNT_NAME}} — company name\n- {{INDUSTRY}} — industry\n- {{SIZE}} — employee count\n- {{LOCATION}} — city or country\n- {{LOGO}} — leave as-is\n- {{PROSPECT_NAME}} — prospect full name\n- {{PROSPECT_TITLE}} — prospect job title\n- {{CALENDAR_LINK}} — leave as # if not provided\n- {{DEMO_LINK}} — leave as # if not provided\n- {{SIGNAL_1_TYPE}} — signal category ALL CAPS\n- {{SIGNAL_1_TITLE}} — 1 sentence pain framing\n- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company\n- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal\n- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal\n\nTEMPLATE:\n${TEMPLATE}`,
+      messages: [{ role: 'user', content: `ACCOUNT DATA:\n${accountData}` }]
+    })
+  });
 
-  // Run Claude + Netlify deploy async after responding
-  (async () => {
-    try {
-      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 4096,
-          system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.\n\nPLACEHOLDER RULES:\n- {{AE_NAME}} — RightRev rep full name\n- {{AE_INITIALS}} — first and last initial (e.g. JS)\n- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from AE to prospect\n- {{ACCOUNT_NAME}} — company name\n- {{INDUSTRY}} — industry\n- {{SIZE}} — employee count\n- {{LOCATION}} — city or country\n- {{LOGO}} — leave as-is\n- {{PROSPECT_NAME}} — prospect full name\n- {{PROSPECT_TITLE}} — prospect job title\n- {{CALENDAR_LINK}} — leave as # if not provided\n- {{DEMO_LINK}} — leave as # if not provided\n- {{SIGNAL_1_TYPE}} — signal category ALL CAPS\n- {{SIGNAL_1_TITLE}} — 1 sentence pain framing\n- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company\n- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal\n- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal\n\nTEMPLATE:\n${TEMPLATE}`,
-          messages: [{ role: 'user', content: `ACCOUNT DATA:\n${accountData}` }]
-        })
-      });
+  const claudeData = await claudeRes.json();
+  const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
+  if (!textBlock) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'No text from Claude', raw: claudeData }) };
+  }
 
-      const claudeData = await claudeRes.json();
-      const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
-      if (!textBlock) return;
+  const html = textBlock.text;
+  const filePath = `accounts/${slug}/index.html`;
+  const content = Buffer.from(html).toString('base64');
 
-      const html = textBlock.text;
-
-      await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${NETLIFY_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          files: { [`/${slug}/index.html`]: html },
-          async: false
-        })
-      });
-    } catch (err) {
-      console.error('Async error:', err);
+  // Check if file already exists to get SHA for update
+  let sha;
+  const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
+    headers: {
+      'Authorization': `Bearer ${GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json'
     }
-  })();
+  });
+  if (checkRes.ok) {
+    const checkData = await checkRes.json();
+    sha = checkData.sha;
+  }
 
-  return response;
+  // Push to GitHub
+  const githubRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: `Generate page for ${slug}`,
+      content,
+      branch: GITHUB_BRANCH,
+      ...(sha && { sha })
+    })
+  });
+
+  if (!githubRes.ok) {
+    const err = await githubRes.json();
+    return { statusCode: 500, body: JSON.stringify({ error: 'GitHub push failed', details: err }) };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ url: pageUrl, slug })
+  };
 };
