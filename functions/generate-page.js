@@ -207,7 +207,17 @@ exports.handler = async (event) => {
   });
 
   const claudeData = await claudeRes.json();
-  const html = claudeData.content[0].text;
+
+  if (!claudeRes.ok) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'Claude API error', details: claudeData }) };
+  }
+
+  const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
+  if (!textBlock) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'No text in Claude response', raw: claudeData }) };
+  }
+
+  const html = textBlock.text;
 
   // Deploy to Netlify via Files API
   const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys`, {
@@ -223,7 +233,7 @@ exports.handler = async (event) => {
   });
 
   const deployData = await deployRes.json();
-  const pageUrl = `https://YOUR-NETLIFY-DOMAIN.netlify.app/${slug}`;
+  const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
 
   return {
     statusCode: 200,
