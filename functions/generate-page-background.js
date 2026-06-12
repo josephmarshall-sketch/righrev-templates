@@ -187,13 +187,18 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid JSON body' };
   }
 
-  const accountData = JSON.stringify(data);
-const slug = (data['account name'] || data.account_name || data.company_name || 'account')
+  // Get account name from any possible field name Clay might send
+  const accountName = data['Account Name'] || data['account name'] || data['account_name'] || data['company_name'] || data['Company Name'] || 'account';
+
+  const slug = accountName
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
   const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
+
+  // Build a clean summary of all Clay data for Claude
+  const accountData = JSON.stringify(data, null, 2);
 
   // Call Claude
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -206,13 +211,38 @@ const slug = (data['account name'] || data.account_name || data.company_name || 
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.\n\nPLACEHOLDER RULES:\n- {{AE_NAME}} — RightRev rep full name\n- {{AE_INITIALS}} — first and last initial (e.g. JS)\n- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from AE to prospect\n- {{ACCOUNT_NAME}} — company name\n- {{INDUSTRY}} — industry\n- {{SIZE}} — employee count\n- {{LOCATION}} — city or country\n- {{LOGO}} — leave as-is\n- {{PROSPECT_NAME}} — prospect full name\n- {{PROSPECT_TITLE}} — prospect job title\n- {{CALENDAR_LINK}} — leave as # if not provided\n- {{DEMO_LINK}} — leave as # if not provided\n- {{SIGNAL_1_TYPE}} — signal category ALL CAPS\n- {{SIGNAL_1_TITLE}} — 1 sentence pain framing\n- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company\n- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal\n- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal\n\nTEMPLATE:\n${TEMPLATE}`,
+      system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.
+
+PLACEHOLDER RULES:
+- {{AE_NAME}} — use "Account Owner Name" from the data
+- {{AE_INITIALS}} — first and last initial of the AE
+- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from the AE to the prospect based on their specific signals
+- {{ACCOUNT_NAME}} — use "Account Name" from the data
+- {{INDUSTRY}} — infer from the data or website
+- {{SIZE}} — leave blank if not provided
+- {{LOCATION}} — infer from the data if possible
+- {{LOGO}} — leave as-is
+- {{PROSPECT_NAME}} — leave blank if not provided
+- {{PROSPECT_TITLE}} — leave blank if not provided
+- {{CALENDAR_LINK}} — leave as #
+- {{DEMO_LINK}} — leave as #
+- {{SIGNAL_1_TYPE}} — use the top signal from "Revenue Recognition Intent Intent_Signals_" in ALL CAPS
+- {{SIGNAL_1_TITLE}} — 1 sentence framing the pain this signal creates for finance
+- {{SIGNAL_1_DETAIL}} — use detail from "Revenue Recognition Intent Intents_Signals_Detail" for this signal
+- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal, same approach
+- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal from "Rev Rec Complexity response" signals
+
+Do not change any CSS, JavaScript, class names, IDs, or HTML structure. Only replace the {{PLACEHOLDER}} values.
+
+TEMPLATE:
+${TEMPLATE}`,
       messages: [{ role: 'user', content: `ACCOUNT DATA:\n${accountData}` }]
     })
   });
 
   const claudeData = await claudeRes.json();
   const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
+
   if (!textBlock) {
     return { statusCode: 500, body: JSON.stringify({ error: 'No text from Claude', raw: claudeData }) };
   }
@@ -243,7 +273,7 @@ const slug = (data['account name'] || data.account_name || data.company_name || 
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      message: `Generate page for ${slug}`,
+      message: `Generate page for ${accountName}`,
       content,
       branch: GITHUB_BRANCH,
       ...(sha && { sha })
