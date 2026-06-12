@@ -187,20 +187,9 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid JSON body' };
   }
 
-  // Get account name from any possible field name Clay might send
-  const accountName = data['Account Name'] || data['account name'] || data['account_name'] || data['company_name'] || data['Company Name'] || 'account';
-
-  const slug = accountName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-
-  const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
-
-  // Build a clean summary of all Clay data for Claude
   const accountData = JSON.stringify(data, null, 2);
 
-  // Call Claude
+  // Call Claude — ask it to output SLUG: first, then the HTML
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -211,13 +200,19 @@ exports.handler = async (event) => {
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.
+      system: `You are an HTML page generator for RightRev sales pages. When given account data, do two things:
+
+1. First line must be: SLUG:company-name (lowercase, hyphens, no spaces — e.g. SLUG:axon or SLUG:microsoft-corp)
+2. Then a blank line
+3. Then the completed HTML with every {{PLACEHOLDER}} filled in
+
+Return ONLY the slug line, blank line, and raw HTML. No explanation, no markdown, no code fences.
 
 PLACEHOLDER RULES:
 - {{AE_NAME}} — use "Account Owner Name" from the data
 - {{AE_INITIALS}} — first and last initial of the AE
 - {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from the AE to the prospect based on their specific signals
-- {{ACCOUNT_NAME}} — use "Account Name" from the data
+- {{ACCOUNT_NAME}} — the company name from the data
 - {{INDUSTRY}} — infer from the data or website
 - {{SIZE}} — leave blank if not provided
 - {{LOCATION}} — infer from the data if possible
@@ -226,11 +221,11 @@ PLACEHOLDER RULES:
 - {{PROSPECT_TITLE}} — leave blank if not provided
 - {{CALENDAR_LINK}} — leave as #
 - {{DEMO_LINK}} — leave as #
-- {{SIGNAL_1_TYPE}} — use the top signal from "Revenue Recognition Intent Intent_Signals_" in ALL CAPS
+- {{SIGNAL_1_TYPE}} — top signal from intent data in ALL CAPS
 - {{SIGNAL_1_TITLE}} — 1 sentence framing the pain this signal creates for finance
-- {{SIGNAL_1_DETAIL}} — use detail from "Revenue Recognition Intent Intents_Signals_Detail" for this signal
-- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal, same approach
-- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal from "Rev Rec Complexity response" signals
+- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company from the signal detail data
+- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal
+- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal from rev rec complexity data
 
 Do not change any CSS, JavaScript, class names, IDs, or HTML structure. Only replace the {{PLACEHOLDER}} values.
 
@@ -247,11 +242,22 @@ ${TEMPLATE}`,
     return { statusCode: 500, body: JSON.stringify({ error: 'No text from Claude', raw: claudeData }) };
   }
 
-  const html = textBlock.text;
+  const fullResponse = textBlock.text;
+
+  // Parse slug from first line
+  const lines = fullResponse.split('\n');
+  const slugLine = lines[0].trim();
+  const slug = slugLine.startsWith('SLUG:') 
+    ? slugLine.replace('SLUG:', '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    : 'account';
+
+  // Rest is HTML (skip slug line and blank line)
+  const html = lines.slice(2).join('\n').trim();
+
   const filePath = `accounts/${slug}/index.html`;
   const content = Buffer.from(html).toString('base64');
 
-  // Check if file already exists to get SHA for update
+  // Check if file exists to get SHA
   let sha;
   const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
     headers: {
@@ -273,7 +279,7 @@ ${TEMPLATE}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      message: `Generate page for ${accountName}`,
+      message: `Generate page for ${slug}`,
       content,
       branch: GITHUB_BRANCH,
       ...(sha && { sha })
@@ -284,6 +290,8 @@ ${TEMPLATE}`,
     const err = await githubRes.json();
     return { statusCode: 500, body: JSON.stringify({ error: 'GitHub push failed', details: err }) };
   }
+
+  const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
 
   return {
     statusCode: 200,
