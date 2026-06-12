@@ -190,53 +190,53 @@ exports.handler = async (event) => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
-  // Call Claude
-  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
-      system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.\n\nPLACEHOLDER RULES:\n- {{AE_NAME}} — RightRev rep full name\n- {{AE_INITIALS}} — first and last initial (e.g. JS)\n- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from AE to prospect\n- {{ACCOUNT_NAME}} — company name\n- {{INDUSTRY}} — industry\n- {{SIZE}} — employee count\n- {{LOCATION}} — city or country\n- {{LOGO}} — leave as-is\n- {{PROSPECT_NAME}} — prospect full name\n- {{PROSPECT_TITLE}} — prospect job title\n- {{CALENDAR_LINK}} — leave as # if not provided\n- {{DEMO_LINK}} — leave as # if not provided\n- {{SIGNAL_1_TYPE}} — signal category ALL CAPS\n- {{SIGNAL_1_TITLE}} — 1 sentence pain framing\n- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company\n- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal\n- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal\n\nTEMPLATE:\n${TEMPLATE}`,
-      messages: [{ role: 'user', content: `ACCOUNT DATA:\n${accountData}` }]
-    })
-  });
-
-  const claudeData = await claudeRes.json();
-
-  if (!claudeRes.ok) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'Claude API error', details: claudeData }) };
-  }
-
-  const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
-  if (!textBlock) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'No text in Claude response', raw: claudeData }) };
-  }
-
-  const html = textBlock.text;
-
-  // Deploy to Netlify via Files API
-  const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${NETLIFY_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      files: { [`/${slug}/index.html`]: html },
-      async: false
-    })
-  });
-
-  const deployData = await deployRes.json();
   const pageUrl = `https://testingsdofnsdojfnds.netlify.app/${slug}`;
 
-  return {
+  // Respond to Clay immediately to avoid timeout
+  const response = {
     statusCode: 200,
-    body: JSON.stringify({ url: pageUrl, slug, deploy: deployData.id })
+    body: JSON.stringify({ status: 'processing', url: pageUrl, slug })
   };
+
+  // Run Claude + Netlify deploy async after responding
+  (async () => {
+    try {
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4096,
+          system: `You are an HTML page generator for RightRev sales pages. When given account data, replace every {{PLACEHOLDER}} in the template below and return ONLY the completed raw HTML. No explanation, no markdown, no code fences.\n\nPLACEHOLDER RULES:\n- {{AE_NAME}} — RightRev rep full name\n- {{AE_INITIALS}} — first and last initial (e.g. JS)\n- {{PERSONALIZED_NOTE}} — 1-2 sentence personal note from AE to prospect\n- {{ACCOUNT_NAME}} — company name\n- {{INDUSTRY}} — industry\n- {{SIZE}} — employee count\n- {{LOCATION}} — city or country\n- {{LOGO}} — leave as-is\n- {{PROSPECT_NAME}} — prospect full name\n- {{PROSPECT_TITLE}} — prospect job title\n- {{CALENDAR_LINK}} — leave as # if not provided\n- {{DEMO_LINK}} — leave as # if not provided\n- {{SIGNAL_1_TYPE}} — signal category ALL CAPS\n- {{SIGNAL_1_TITLE}} — 1 sentence pain framing\n- {{SIGNAL_1_DETAIL}} — 2-3 sentences specific to this company\n- {{SIGNAL_2_TYPE}}, {{SIGNAL_2_TITLE}}, {{SIGNAL_2_DETAIL}} — second signal\n- {{SIGNAL_3_TYPE}}, {{SIGNAL_3_TITLE}}, {{SIGNAL_3_DETAIL}} — third signal\n\nTEMPLATE:\n${TEMPLATE}`,
+          messages: [{ role: 'user', content: `ACCOUNT DATA:\n${accountData}` }]
+        })
+      });
+
+      const claudeData = await claudeRes.json();
+      const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
+      if (!textBlock) return;
+
+      const html = textBlock.text;
+
+      await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${NETLIFY_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: { [`/${slug}/index.html`]: html },
+          async: false
+        })
+      });
+    } catch (err) {
+      console.error('Async error:', err);
+    }
+  })();
+
+  return response;
 };
