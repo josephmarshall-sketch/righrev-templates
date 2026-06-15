@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Solar — RightRev</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rr-dark: #1A3D2B; --rr-mid: #2A5C3F; --rr-accent: #4CAF7D;
+    --rr-light: #EAF3DE; --rr-border: #C0DD97; --rr-text-green: #27500A;
+    --gray-50: #F8F9F8; --gray-100: #F0F2F0; --gray-200: #E2E5E2;
+    --gray-400: #8A9189; --gray-700: #3D4340; --gray-900: #1C1F1C;
+  }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #F8F9F8; padding: 32px 24px; }
+  .page { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .s-header { background: var(--rr-dark); border-radius: 14px; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .ae-photo { width: 64px; height: 64px; border-radius: 50%; background: var(--rr-mid); border: 2px solid var(--rr-accent); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: var(--rr-accent); flex-shrink: 0; }
+  .ae-name { font-size: 17px; font-weight: 600; color: #fff; }
+  .ae-role { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .pers-note { font-size: 14px; color: rgba(255,255,255,0.75); text-align: right; font-style: italic; max-width: 260px; line-height: 1.5; }
+  .consult-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--rr-accent); color: var(--rr-dark); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; }
+  .s-account { background: #fff; border: 1px solid var(--gray-200); border-radius: 14px; padding: 24px 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+  .acct-left { display: flex; align-items: flex-start; gap: 14px; }
+  .acct-logo { width: 52px; height: 52px; border-radius: 10px; background: var(--gray-100); border: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gray-400); text-align: center; flex-shrink: 0; }
+  .acct-name { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+  .acct-sub { font-size: 13px; color: var(--gray-400); margin-top: 3px; }
+  .acct-right { text-align: right; }
+  .prospect-name { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+  .prospect-title { font-size: 13px; color: var(--gray-400); margin-top: 3px; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+  .s-opps { background: #fff; border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px 28px; }
+  .opps-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .opp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--gray-200); padding: 16px 0; align-items: start; }
+  .opp-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .opp-row:first-child { padding-top: 0; }
+  .opp-left { display: flex; align-items: flex-start; gap: 10px; padding-right: 20px; }
+  .opp-right { padding-left: 20px; border-left: 1px solid var(--gray-200); }
+  .opp-num { width: 24px; height: 24px; border-radius: 50%; background: var(--rr-dark); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .opp-signal-type { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-mid); margin-bottom: 3px; }
+  .opp-title { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.4; }
+  .opp-copy { font-size: 13px; color: var(--gray-400); line-height: 1.55; }
+  .s-helps { border: 1px solid var(--gray-200); border-radius: 14px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
+  .helps-left { padding: 24px; border-right: 1px solid var(--gray-200); }
+  .helps-right { padding: 24px; background: var(--gray-50); }
+  .helps-title { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 14px; }
+  .challenge { padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+  .challenge:last-child { border-bottom: none; }
+  .ch-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-mid); margin-bottom: 3px; }
+  .ch-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .story-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 9px; padding: 13px; margin-bottom: 8px; }
+  .story-card:last-child { margin-bottom: 0; }
+  .story-co { font-size: 11px; font-weight: 700; color: var(--rr-mid); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .story-match { font-size: 11px; font-weight: 600; color: var(--rr-text-green); background: var(--rr-light); border: 1px solid var(--rr-border); border-radius: 4px; padding: 2px 8px; display: inline-block; margin: 4px 0 6px; }
+  .story-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .story-link { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--rr-mid); text-decoration: none; }
+  .s-footer { background: var(--rr-dark); border-radius: 14px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .footer-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rr-accent); margin-bottom: 6px; }
+  .footer-headline { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 5px; }
+  .footer-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+  .btn-primary { background: var(--rr-accent); color: var(--rr-dark); font-size: 13px; font-weight: 700; padding: 11px 22px; border-radius: 8px; border: none; cursor: pointer; }
+  .btn-ghost { background: transparent; color: #fff; font-size: 12px; font-weight: 500; padding: 9px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="s-header">
+    <div class="header-left">
+      <div class="ae-photo">DK</div>
+      <div>
+        <div class="ae-name">Dylan Kay</div>
+        <div class="ae-role">Account Executive · RightRev</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="pers-note">"Aurora's credit-based pricing and bundled enterprise tiers create exactly the kind of multi-element, consumption-driven complexity that breaks standard rev rec workflows — I'd love to show you how we handle it automatically."</div>
+      <a class="consult-btn" href="#">Book time with me</a>
+    </div>
+  </div>
+  <div class="s-account">
+    <div class="acct-left">
+      <div class="acct-logo">LOGO</div>
+      <div>
+        <div class="acct-name">Aurora Solar</div>
+        <div class="acct-sub">Solar Technology / SaaS · · San Francisco, CA</div>
+      </div>
+    </div>
+    <div class="acct-right">
+      <div class="prospect-name"></div>
+      <div class="prospect-title"></div>
+    </div>
+  </div>
+  <div class="s-opps">
+    <div class="opps-header">
+      <div class="section-label" style="margin-bottom:0">Areas of growth and complexity</div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">1</div><div><div class="opp-signal-type">SSP ALLOCATION</div><div class="opp-title">Bundled enterprise plans with separately priced add-ons create SSP allocation complexity that spreadsheets can't reliably handle.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">Aurora's enterprise plans combine core software modules with separately identified services — Expert Design Service, Plan Sets, Design API, and premium add-ons — all sold under a contact-sales structure. Each deal requires SSP analysis to determine standalone prices and allocate the transaction price across performance obligations. As deal count and module variety grow, this becomes increasingly difficult to do accurately at scale without a dedicated revenue automation layer.</div></div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">2</div><div><div class="opp-signal-type">USAGE & CONSUMPTION</div><div class="opp-title">Credit-based billing that spans multiple services and volume tiers demands event-level tracking to recognize revenue correctly.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">Aurora Business customers purchase credits upfront and draw them down over the contract period across projects, Aurora AI, Expert Design Service, and Plan Sets. Enterprise tiers add volume-based discounts on credit purchases, further complicating the revenue profile. Recognizing revenue as credits are consumed — rather than when they are purchased — requires continuous event-level tracking that ERP systems and manual processes are not built to sustain at scale.</div></div>
+    </div>
+    <div class="opp-row">
+      <div class="opp-left"><div class="opp-num">3</div><div><div class="opp-signal-type">BUNDLING</div><div class="opp-title">Multi-module enterprise packages with point-of-sale add-ons require precise de-bundling to stay ASC 606 compliant on every contract.</div></div></div>
+      <div class="opp-right"><div class="opp-copy">Aurora's Build, Grow, and Scale enterprise plans package Design Mode, Sales Mode, Sync API, SSO, Aurora AI, and Contract Manager together, with additional point-of-sale add-ons available at signing. Under ASC 606, each distinct performance obligation must be identified and revenue allocated based on relative SSP. The combination of tiered bundles and flexible add-ons means the de-bundling exercise must be repeated accurately for every contract variation — a significant burden without purpose-built revenue recognition automation.</div></div>
+    </div>
+  </div>
+  <div class="s-helps">
+    <div class="helps-left">
+      <div class="helps-title">How RightRev solves it</div>
+      <div class="challenge"><div class="ch-label">SSP ALLOCATION</div><div class="ch-text">RightRev detects and reallocates revenue across SSP components the moment a contract is signed — your team gets the right numbers without touching a spreadsheet on every new deal.</div></div>
+      <div class="challenge"><div class="ch-label">USAGE & CONSUMPTION</div><div class="ch-text">When a contract is amended, co-termed, or expanded mid-cycle, RightRev recalculates and posts the updated recognition immediately — your auditors get a complete trace, no manual work required.</div></div>
+      <div class="challenge"><div class="ch-label">BUNDLING</div><div class="ch-text">RightRev's billing engine tracks every usage event, credit drawdown, and overage as it happens — recognized revenue stays current without waiting for month-end reconciliation.</div></div>
+    </div>
+    <div class="helps-right">
+      <div class="helps-title">How others solved this</div>
+      <div class="story-card" id="story-1"><div class="story-co" id="story-1-co"></div><div class="story-match" id="story-1-match"></div><div class="story-text" id="story-1-text"></div><a class="story-link" id="story-1-link" target="_blank">Read the full story →</a></div>
+      <div class="story-card" id="story-2"><div class="story-co" id="story-2-co"></div><div class="story-match"
