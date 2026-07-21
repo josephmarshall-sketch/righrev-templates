@@ -1,9 +1,9 @@
 [functions]
   directory = "functions"
- 
+
 [functions."generate-page-background"]
-  timeout = 120
- 
+  timeout = 300
+
 [[redirects]]
   from = "/:slug"
   to = "/accounts/:slug/index.html"
