@@ -1247,7 +1247,13 @@ TEMPLATE:
 
   const fullResponse = textBlock.text;
   const lines = fullResponse.split('\n');
-  const startLine = lines[0].startsWith('SLUG:') ? 2 : 0;
+  // Defensive: only skip a second line if it's actually blank. If Claude ever
+  // omits the blank line after "SLUG:xxx", slicing a fixed 2 lines would eat
+  // the first real line of HTML (the <!DOCTYPE html> line).
+  let startLine = 0;
+  if (lines[0].startsWith('SLUG:')) {
+    startLine = (lines[1] !== undefined && lines[1].trim() === '') ? 2 : 1;
+  }
   const html = lines.slice(startLine).join('\n').trim().replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64).replace('<style>', `<style>${FONT_CSS}`);
   console.log('HTML starts with:', html.slice(0, 100));
   console.log('HTML ends with:', html.slice(-100));
@@ -1266,7 +1272,13 @@ TEMPLATE:
     return { statusCode: 500, body: JSON.stringify({ error: 'Base64 failed', message: e.message }) };
   }
 
-  // Get SHA if file exists, delete it, then recreate fresh
+  // Get SHA if the file already exists, so we can update it in place.
+  // NOTE: we intentionally do NOT delete-then-recreate here. Deleting first
+  // and re-creating a couple seconds later relies on GitHub's API being
+  // immediately consistent, which it isn't guaranteed to be — that race is
+  // the most likely explanation for pushes that report success (200/201)
+  // but land as an empty file. A single PUT (with sha if updating, without
+  // it if creating) is atomic and is the pattern GitHub's own docs use.
   let sha;
   const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`, {
     headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -1277,22 +1289,8 @@ TEMPLATE:
     const checkData = await checkRes.json();
     sha = checkData.sha;
     console.log('Existing SHA:', sha);
-
-    // Delete existing file
-    const deleteRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message: `Delete old page for ${slug}`, sha, branch: GITHUB_BRANCH })
-    });
-    console.log('Delete status:', deleteRes.status);
-    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
-  // Create fresh file
   const githubRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
     method: 'PUT',
     headers: {
@@ -1303,7 +1301,8 @@ TEMPLATE:
     body: JSON.stringify({
       message: `Generate page for ${slug}`,
       content,
-      branch: GITHUB_BRANCH
+      branch: GITHUB_BRANCH,
+      ...(sha ? { sha } : {})
     })
   });
 
@@ -1312,6 +1311,24 @@ TEMPLATE:
     const err = await githubRes.json();
     console.log('GitHub error:', JSON.stringify(err));
     return { statusCode: 500, body: JSON.stringify({ error: 'GitHub push failed', details: err }) };
+  }
+
+  // Self-check: read the file straight back from GitHub and compare the
+  // base64 length against what we sent. If GitHub ever serves back a much
+  // shorter blob than we pushed, that's a definitive signal something went
+  // wrong on GitHub's end rather than in this function.
+  try {
+    const verifyRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`, {
+      headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    const verifyData = await verifyRes.json();
+    const verifiedLength = verifyData.content ? verifyData.content.replace(/\n/g, '').length : 0;
+    console.log('Verify content length (base64):', verifiedLength, 'expected:', content.length);
+    if (verifiedLength < content.length * 0.9) {
+      console.log('WARNING: pushed content appears truncated on GitHub.');
+    }
+  } catch (e) {
+    console.log('Verify step failed (non-fatal):', e.message);
   }
 
   const pageUrl = `https://account.rightrev.com/${slug}`;
