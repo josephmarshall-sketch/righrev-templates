@@ -1254,7 +1254,7 @@ TEMPLATE:
   console.log('HTML preview:', html.slice(0, 200));
 
   const filePath = `accounts/${slug}/index.html`;
-  const content = Buffer.from(html).toString('base64');
+  const content = btoa(unescape(encodeURIComponent(html)));
   console.log('Base64 content length:', content.length);
 
   let sha;
