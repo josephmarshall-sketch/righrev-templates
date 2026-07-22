@@ -38,8 +38,7 @@ exports.handler = async (event) => {
   const accountData = JSON.stringify(data, null, 2);
 
   const accountName = data['AccountName'] || data['Account Name'] || 'account';
-  const slug = accountName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  console.log('Account name:', accountName, '| Slug:', slug);
+ const slug = accountName.toLowerCase().replace(/[^a-z0-9]+/g, '');  console.log('Account name:', accountName, '| Slug:', slug);
 
   console.log('Starting Claude call. Data keys:', Object.keys(data));
 
