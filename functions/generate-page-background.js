@@ -1249,6 +1249,8 @@ TEMPLATE:
   const lines = fullResponse.split('\n');
   const startLine = lines[0].startsWith('SLUG:') ? 2 : 0;
   const html = lines.slice(startLine).join('\n').trim().replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64).replace('<style>', `<style>${FONT_CSS}`);
+  console.log('HTML starts with:', html.slice(0, 100));
+  console.log('HTML ends with:', html.slice(-100));
 
   console.log('HTML length before GitHub push:', html.length);
   console.log('HTML preview:', html.slice(0, 200));
