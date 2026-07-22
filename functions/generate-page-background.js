@@ -54,7 +54,7 @@ exports.handler = async (event) => {
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
+      max_tokens: 24000, // Haiku 4.5 supports up to 64,000; a full generated page runs ~20K tokens, so 8192 (the old value) was never enough room to finish, even with the font-base64 bug fixed.
       system: `You are generating personalized RightRev account briefing pages. You will receive Clay account data and must fill in all {{PLACEHOLDER}} values in the HTML template provided. 
 
 CRITICAL OUTPUT FORMAT:
