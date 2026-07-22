@@ -1250,8 +1250,12 @@ TEMPLATE:
   const startLine = lines[0].startsWith('SLUG:') ? 2 : 0;
   const html = lines.slice(startLine).join('\n').trim().replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64).replace('<style>', `<style>${FONT_CSS}`);
 
+  console.log('HTML length before GitHub push:', html.length);
+  console.log('HTML preview:', html.slice(0, 200));
+
   const filePath = `accounts/${slug}/index.html`;
   const content = Buffer.from(html).toString('base64');
+  console.log('Base64 content length:', content.length);
 
   let sha;
   const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
