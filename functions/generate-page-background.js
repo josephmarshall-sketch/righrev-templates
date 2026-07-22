@@ -116,14 +116,14 @@ FIELD MAPPING FROM CLAY DATA:
 - {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — capability stat box
 - {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — account-specific count box
 - {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — risk/proof stat box
-- {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}} — top signal from "RevRecComplexityResponse" field (this is a JSON string — parse it to get "Top signals"). PAIN_SIGNAL is the signal name in ALL CAPS. PAIN_WHY is why this matters for this account. PAIN_COST is what it costs them. PAIN_FIX is how RightRev solves it.
-- {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}} — second signal, same approach
-- {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}} — third signal, same approach
+- {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}}, {{PAIN_1_ICON}} — top signal from "RevRecComplexityResponse" field (this is a JSON string — parse it to get "Top signals"). PAIN_SIGNAL is the signal name in ALL CAPS. PAIN_WHY is why this matters for this account. PAIN_COST is what it costs them. PAIN_FIX is how RightRev solves it. PAIN_ICON is one of the pre-approved inline SVG icons in the detailed instructions below, matched to the signal's mechanic.
+- {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}}, {{PAIN_2_ICON}} — second signal, same approach
+- {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}}, {{PAIN_3_ICON}} — third signal, same approach
 - {{CASE_STUDY_COMPANY}}, {{CASE_STUDY_CHALLENGE}}, {{CASE_STUDY_PROOF}}, {{CASE_STUDY_QUOTE}}, {{CASE_STUDY_QUOTE_ATTRIBUTION}}, {{CASE_STUDY_URL}}, {{CASE_STUDY_BUTTON_LABEL}} — from "CaseStudyRecommendation" field. This field is a JSON object with a "response" property containing markdown text. Parse the case study name, why it fits, the case study link URL, and pull one verbatim quote from the quotes listed. Use the case study link as {{CASE_STUDY_URL}}. Never invent quotes — only use quotes explicitly listed in the response field.
 - {{ASSESSMENT_CTA_TEXT}} — closing CTA copy grounded in account signals
-- {{FINANCE_MONETIZATION_TITLE}}, {{FINANCE_MONETIZATION_TEXT}} — CFO monetization item
-- {{FINANCE_AUDIT_TITLE}}, {{FINANCE_AUDIT_TEXT}} — CFO audit item
-- {{FINANCE_VALUATION_TITLE}}, {{FINANCE_VALUATION_TEXT}} — CFO valuation item
+- {{FINANCE_MONETIZATION_TEXT}} — CFO monetization item (title is static: "Launch any revenue model faster")
+- {{FINANCE_AUDIT_TEXT}} — CFO audit item (title is static: "Build audit confidence")
+- {{FINANCE_VALUATION_TEXT}} — CFO valuation item (title is static: "Create a defensible system of record")
 - {{ACCOUNTING_STATUS_QUO_TITLE}}, {{ACCOUNTING_STATUS_QUO_TEXT}} — controller status quo
 - {{ACCOUNTING_CONFLICT_TITLE}}, {{ACCOUNTING_CONFLICT_TEXT}} — controller conflict
 - {{ACCOUNTING_RESOLUTION_TITLE}}, {{ACCOUNTING_RESOLUTION_TEXT}} — controller resolution
@@ -197,6 +197,71 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
        case study card) must carry ?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}. Links
        to other domains (rep meeting link, LinkedIn) do not get this
        parameter.
+
+    8. STANDING DESIGN AND COPY PRINCIPLES. These came out of specific
+       team feedback on one account's output, but the principle behind
+       each is general and should be applied anywhere the same
+       situation comes up, not just in the exact section that
+       prompted it:
+
+       a. DON'T DUPLICATE INFORMATION ALREADY VISIBLE ELSEWHERE.
+          The rep's name under the AE quote was redundant with the
+          Account Team card next to it, so it was removed. Before
+          adding an attribution, byline, or label anywhere, check
+          whether that identity is already established elsewhere on
+          the page. If so, don't repeat it.
+
+       b. USE ICONS TO AID SCANNING ON ANY MULTI-POINT LIST, but pick
+          the RIGHT KIND of icon for what the list represents:
+            - A list of DISTINCT CATEGORIES (different mechanics,
+              different topics) gets a small icon PER CATEGORY that
+              differentiates them at a glance (see the Pain RightRev
+              Can Solve icon library below).
+            - A list of ACHIEVED OUTCOMES or CAPABILITIES (the same
+              kind of thing repeated three times, just different
+              instances) gets the SAME checkmark icon on every item,
+              since the point is "here are three wins," not "here are
+              three different topics." Both audience rows use this.
+          If a new list gets added to this document later, decide
+          which of these two shapes it is before picking an icon
+          pattern, don't default to checkmarks everywhere out of habit.
+
+       c. CONTAINER SIZE FOLLOWS CONTENT, NOT THE OTHER WAY AROUND.
+          When a display number wraps awkwardly or a caption feels
+          cramped, the fix is to adjust sizing/layout to fit the real
+          content (widen a column, shrink a font, split a unit word
+          into the caption), not to shorten the underlying fact to fit
+          a container that was sized for shorter examples. Same logic
+          as the "box height follows body copy" rule elsewhere in this
+          file, applied to width as well as height.
+
+       d. NAME RIGHTREV PRODUCTS UNAMBIGUOUSLY. "Architect," "Assistant,"
+          "Agents" are product names, not roles or people. First mention
+          in any section should read "RightRev's [Name] product," not
+          just "[Name]," so it can't be misread as a job title.
+
+       e. WRITE CAUSAL SENTENCES EXPLICITLY, ESPECIALLY IN COST/RISK
+          LINES. "If [X] can't happen fast enough, [Y] happens" is
+          clearer than a vaguer restatement of the same idea. When a
+          cost or consequence sentence feels muddy, rewrite it as an
+          explicit if/then rather than trying to trim words.
+
+       f. NOT EVERY LINE OF COPY NEEDS TO BE WRITTEN FRESH PER ACCOUNT.
+          Distinguish BRAND-PROMISE elements (a claim about what
+          RightRev always delivers, true for any account) from
+          EVIDENCE elements (the account-specific proof underneath).
+          The Finance row headlines are a brand promise now: fixed
+          across every account. The body text under each remains
+          account-specific evidence. When building something new, ask
+          which of the two a given line actually is before deciding
+          whether to template it or write it fresh each time.
+
+       g. WHEN DESCRIBING WHAT A TEAM'S TIME GETS FREED UP FOR, END ON
+          THE MOST ELEVATED FRAMING AVAILABLE. "Moves from manual
+          spreadsheets to providing analysis and strategic decision-
+          making" reads as a promotion; "moves to reviewing exceptions"
+          still sounds like maintenance work. Always take the more
+          aspirational version of the same true claim.
   ================================================================
 -->
 
@@ -283,9 +348,12 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     ================================================================
     AE QUOTE — instructions for Claude Code
     ================================================================
-    Replaces the old static subline. This is a first-person quote,
-    attributed to the account's Rep ({{REP_NAME}}), speaking directly
-    to the MOST PRESSING problem RightRev solves for this account.
+    Replaces the old static subline. This is a quote, written in the
+    voice of the account's Rep ({{REP_NAME}}, used for tone only, not
+    displayed as a byline), speaking directly to the MOST PRESSING
+    problem RightRev solves for this account. No attribution line
+    appears under the quote on the page, the rep's identity is already
+    established in the Account Team card to the right.
 
     Source: the DETAILED SIGNALS column ("Signals fired" / "Top
     signals"), NOT the short tags used for the title above. Pick the
@@ -342,7 +410,12 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
       Architect capability set (e.g. "a quarter → a day" for modeling
       a new revenue arrangement). Pick whichever capability stat most
       directly answers the short-tag challenge (e.g. "AI Product" /
-      new pricing launches → the speed-to-recognize stat).
+      new pricing launches → the speed-to-recognize stat). When
+      naming a RightRev product (Architect, Assistant, Agents), always
+      say "RightRev's [Name] product" on first mention in a section,
+      not just "[Name]" alone, since "the Architect" or "Architect
+      turns X into Y" reads ambiguously as a job title or a person
+      rather than a product.
 
       Box 2 — ACCOUNT-SPECIFIC number, drawn directly from Clay's data
       about this account (not the generic value pillar docs). Default
@@ -355,6 +428,18 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
       figure from the news/signal sourcing, etc). Purpose: prove this
       isn't a generic pitch, the page already knows something true
       about them.
+
+      CONNECTION TO "WHAT MATTERS MOST" BELOW: this count is not a
+      coincidence, it's normally the same count as the number of
+      numbered items in the "What Matters Most" section further down
+      the page (both draw from the same "Top signals" entries). Make
+      that connection explicit in Box 2's body text with a closing
+      clause pointing down the page, e.g. "...see how each one ranks
+      below." Do NOT use sequence language here ("see the order we'd
+      tackle all three in") — that section is a priority ranking, not
+      a rollout plan. Don't add this pointer in Box 1 or Box 3, only
+      Box 2, since it's the one that's actually counting the same
+      items, not a different stat.
 
       Box 3 — RISK/PROOF stat from Value_Pillars__Detailed_Perspectives,
       chosen by account profile:
@@ -382,43 +467,51 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     accounts; it's a section label, not account-specific copy.
 
     THE HEADLINE FOR EACH BOX MUST BE PUNCHY, NOT DESCRIPTIVE, AND IT
-    MUST BE POSITIVE. This is the most important rule in this section.
-    The old pattern was a descriptive title explaining what the number
-    measures (e.g. "To model a new revenue arrangement, down from a
-    quarter"). That undersells the number. Replace it with a punchy
-    action/outcome headline that puts the number to work as an
-    improvement or achievement RightRev delivers. Every box, including
-    the risk/proof box, gets framed as a positive outcome, never as a
-    danger to fear or a negative to avoid. "Avoid the SEC's top 4
-    audit flags" and "Avoid extra days added to close" are both the
-    WRONG pattern now, even though the underlying stat is a risk
-    figure: flip it to describe the protection, reduction, or
-    automation RightRev delivers instead of the bad thing that would
-    happen without it. Lead with a verb like Achieve, Automate,
-    Reduce, Cut, Protect, Cover, Ship, Close, and so on, never Avoid,
-    Prevent, or Stay out of. Weave the box's own number directly into
-    the sentence rather than letting the big number sit disconnected
-    from the headline next to it.
+    MUST BE NEGATIVE / CURRENT-STATE. This reverses an earlier version
+    of this rule that required positive framing here; that framing now
+    lives in "What Matters Most" instead (see below), and this section
+    is deliberately the problem half of the page, not the fix half.
+    "What's At Stake" names what is ALREADY TRUE TODAY, without
+    RightRev, the cost or drag the account is already carrying, not
+    the improvement RightRev delivers. Every box, including the
+    capability box, gets framed as a current, ongoing cost, not a
+    future achievement. "Achieve same-day recognition" and "Reduce
+    close by 8 to 12 days" are both the WRONG pattern now: flip it to
+    describe what's actually happening right now without RightRev in
+    place. Lead with what IS the case: takes, adds, costs, sits at,
+    runs on, and so on, not Achieve, Automate, Reduce, or other
+    solution verbs, those belong in "What Matters Most" now. Weave the
+    box's own number directly into the sentence rather than letting
+    the big number sit disconnected from the headline next to it.
 
-    Pattern per box, all three positive:
-      Box 1 (capability) → an ACHIEVEMENT: "Achieve/Ship/Launch
-        [outcome] in {{VALUE_BOX_1_NUMBER}}."
-      Box 2 (account-specific count) → automation/completion of the
-        complexity: "Automate {{VALUE_BOX_2_NUMBER}} [complexities] in
-        one platform."
-      Box 3 (risk/proof) → the REDUCTION or PROTECTION achieved, not
-        the risk itself: "Reduce [X] by {{VALUE_BOX_3_NUMBER}}" or
-        "Stay protected against [the risk]," never "Avoid [the risk]."
-        The stat still comes from risk/proof data (see sourcing rules
-        above); only the way it's presented flips from fear to outcome.
+    Pattern per box, all three negative / current-state:
+      Box 1 (capability) → the CURRENT COST, tied to something urgent
+        and concrete (shipping, launching), not a vague time
+        comparison: "{{VALUE_BOX_1_NUMBER}} to ship a new [product/
+        pricing model/tier]." A bare contrast like "1 quarter, not a
+        day" doesn't land, it's just two numbers; anchoring it to the
+        actual consequence (a delayed launch) makes the cost concrete
+        and urgent.
+      Box 2 (account-specific count) → the complexity as it stands
+        today, unmanaged: "{{VALUE_BOX_2_NUMBER}} critical
+        complexities are running unmanaged today."
+      Box 3 (risk/proof) → the risk or drag AS IT EXISTS NOW: "[X] is
+        being added to close" or "[Account] sits inside [the risk],"
+        not the protection or reduction. The stat still comes from the
+        same risk/proof data (see sourcing rules above); only the
+        framing changes, back to naming the exposure directly.
 
-    The number and caption pair need the same positive flip. A caption
-    like "Not a quarter" (contrast against the old way) is already
-    positive; a caption that just restates a fact without conveying
-    improvement ("One platform" next to a bare "3") is not enough on
-    its own, make sure the pairing reads as something achieved: "3
-    critical complexities automated," "8 to 12+ days reduced from
-    close," not a neutral label sitting next to the number.
+    The number and caption pair need the same negative-but-factual
+    framing, not neutral or positive. "Days faster close" is now the
+    WRONG pattern for Box 3, "Days added to close" is right. For Box 1,
+    "Not a day" is also now the WRONG pattern (too abstract to feel
+    urgent), "To ship new product" or "To ship a new tier" is right,
+    since it names the actual thing being delayed. A caption that just
+    restates a fact without conveying the current cost ("One platform"
+    next to a bare "3") is not enough on its own either, make sure the
+    pairing reads as a real, present, urgent cost: "1 quarter+ to ship
+    new product," "3 critical complexities unmanaged," "8-12+ days
+    added to close."
 
     The value-explain-text below the headline still carries the
     grounding detail (why this is true for this account, sourced
@@ -436,107 +529,166 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     itself as short as possible too: if the underlying stat is a range
     or an approximation ("top three or four"), round it to the
     cleaner, still-accurate version for the big number ("Top 4"), and
-    let the caption or body text carry the precise nuance.
+    let the caption or body text carry the precise nuance. If the
+    stat has a unit word attached ("8 to 12+ days"), keep the unit
+    word OUT of the number and put it in the caption instead: number
+    "8-12+", caption "days added to close". This keeps the number
+    itself short enough to sit on one line in the (now widened, 190px)
+    number cell, and the caption still reads as one fluid phrase with
+    it: "8-12+ days added to close."
 
     No em dashes or double hyphens (see the mandatory instruction
     block at the top of this file).
 
     THE CAPTION MUST READ AS ONE FLUID PHRASE WITH THE NUMBER, NOT TWO
-    SEPARATE FACTS, AND THE PHRASE MUST BE POSITIVE (see the framing
-    rule above). Read the number and caption together out loud as a
-    single sentence fragment before finalizing either one. Two ways
-    this works:
-      - CONTRAST: "[number], not [the old way]" (e.g. "1 day, not a
-        quarter")
-      - DIRECT COMPLETION: the caption is the noun the number is
-        counting or the positive outcome the number produces, so the
-        pair reads as one clause (e.g. "3 critical complexities
-        automated," "8 to 12+ days reduced from close")
+    SEPARATE FACTS, AND THE PHRASE MUST BE NEGATIVE / CURRENT-STATE
+    (see the framing rule above). Read the number and caption together
+    out loud as a single sentence fragment before finalizing either
+    one. Two ways this works:
+      - CONTRAST: "[number], not [the fast way]" — use sparingly, only
+        when the "fast way" is itself concrete (a specific timeframe),
+        not just an abstract opposite. A bare contrast like "1 quarter,
+        not a day" fails to feel urgent because it doesn't say what's
+        actually being delayed.
+      - DIRECT COMPLETION (preferred): the caption is the noun the
+        number is counting or the concrete cost the number represents,
+        so the pair reads as one clause and names something real and
+        urgent (e.g. "1 quarter+ to ship new product," "3 critical
+        complexities unmanaged," "8-12+ days added to close")
     A caption that names an unrelated fact next to the number ("3" /
     "One platform") breaks this: read aloud it sounds like two claims,
     not one. A caption that is accurate and fluid but still framed as
-    a danger ("Top 4" / "SEC risk area") also fails the newer rule:
-    it reads as one phrase, but the phrase itself isn't positive. Fix
-    both problems in the same pass: make it fluid AND make it read as
-    something achieved, not something to fear.
+    a win ("8-12+" / "days faster close") also fails the current rule:
+    it reads as one phrase, but the phrase itself is the wrong valence
+    for this section. Fix both problems in the same pass: make it
+    fluid AND make it read as a real, present, urgent cost, not a fear
+    to avoid and not an achievement either, just what's true right now.
 
-    WORKED EXAMPLE (Axon), old descriptive title → new punchy headline:
-      Box 1: "To model a new revenue arrangement, down from a quarter"
-        → "Achieve same-day recognition for any new pricing model."
-      Box 2: "Rev rec complexities already live in Axon's enterprise
-        agreements" → "Automate 3 critical complexities in one
-        platform."
-      Box 3: "One of the SEC's most frequent flags in public company
-        reviews" → "Stay protected against the SEC's top 4 audit
-        triggers."
+    WORKED EXAMPLE (Axon), old positive headline → new negative/
+    current-state headline:
+      Box 1: "Achieve same-day recognition for any new pricing model"
+        → "New product plans sit a quarter or more from shipping."
+      Box 2: "Automate 3 critical complexities in one platform" →
+        "3 critical complexities are running unmanaged today."
+      Box 3: "Stay protected against the SEC's top 4 audit triggers"
+        → "8 to 12 days are being added to close." (or, if using the
+        SEC stat instead of the close-cycle fallback: "Axon sits
+        inside the SEC's top 4 audit triggers.")
 
     WORKED EXAMPLE (Axon), number plus caption pairing:
-      Box 1: number "1 day", caption "Not a quarter" (contrast,
-        already positive)
-      Box 2: number "3", caption "Critical complexities automated"
-        (direct completion, names what the 3 are AND the positive
-        outcome: reads as "3 critical complexities automated")
+      Box 1: number "1 quarter+" (NOTE: this flips from the old "1
+        day" capability number, since "1 day" has no natural reading
+        as a current cost, the cost IS the quarter; also note the "+"
+        added, since "a quarter" alone understates it, it's often
+        longer), caption "To ship new product" (direct completion,
+        names the actual urgent consequence: reads as "1 quarter+ to
+        ship new product," not the earlier abstract contrast "1
+        quarter, not a day," which named no real consequence)
+      Box 2: number "3", caption "Critical complexities unmanaged"
+        (direct completion: reads as "3 critical complexities
+        unmanaged")
       Box 3: number "Top 4" (rounded from "three or four" for the big
-        number), caption "Risk areas covered" (direct completion,
-        flips the risk stat into the protection achieved: reads as
-        "Top 4 risk areas covered," not "Top 4 SEC risk area")
+        number), caption "SEC risk area" (direct completion: reads as
+        "Top 4 SEC risk area," naming the exposure directly rather
+        than the protection)
 
     WORKED EXAMPLE (Axon):
-      Box 1: "1 day" — capability stat, ties to "AI Product" short tag.
-             Axon ships new AI-powered offerings on a fast cadence
-             (Axon Vision, Axon Assistant, Axon 911 all announced same
-             week); RightRev's Architect turns a new pricing/bundling
-             model into recognized, auditable revenue in a day instead
-             of the quarter it traditionally takes, so recognition never
-             lags behind what product ships.
+      Box 1: "1 quarter+" — capability stat, ties to "AI Product" short
+             tag, framed as the current cost of NOT having same-day
+             recognition: a delayed ship date, not an abstract time
+             comparison. Axon ships new AI-powered offerings on a fast
+             cadence (Axon Vision, Axon Assistant, Axon 911 all
+             announced same week), but modeling a new pricing or
+             bundling model traditionally takes a quarter or more
+             without a purpose-built recognition process, so new
+             product plans sit that long from shipping.
 
       Box 2: "3" — account-specific count, drawn straight from Clay's
              detailed signals for Axon: SSP Allocation, Contract
              Modifications, and Bundling all fired on this account's
              own enterprise agreements (AI Era Plan, Officer Safety
-             Plan) — three distinct, already-live complexities RightRev
-             handles in one platform today, not hypothetical exposure.
+             Plan) — three distinct complexities already live and
+             currently handled manually, not hypothetical exposure.
+             Body text closes with a pointer down to "What Matters
+             Most" below: "...see how each one ranks below," not "see
+             the order we'd tackle all three in" (that phrasing implies
+             a sequence; this section is a priority ranking instead).
 
       Box 3: "Top 4" — risk/proof stat, Pillar 3, chosen because Axon
              is a public, SEC-reporting company (NASDAQ: AXON): revenue
              recognition has been a top three or four SEC staff comment
              letter topic every year since ASC 606 took effect — exactly
              the scrutiny bundled, multi-element enterprise agreements
-             like Axon's invite. (Sourced from Value_Pillars doc, Pillar
+             like Axon's invite, today, without anything here yet
+             addressing it. (Sourced from Value_Pillars doc, Pillar
              3 — not displayed on the page.)
 
     WORKED EXAMPLE (Aurora Solar), demonstrating both fallbacks:
-      Box 1: "1 day" — same capability stat, now tied to the detailed-
-             signal fallback (Usage and Consumption, since short tags
-             came back "None"). Aurora's credit-based Build, Grow, and
-             Scale plans are exactly the kind of new revenue model
-             RightRev's Architect turns into recognized, auditable
-             revenue in a day instead of a quarter.
+      Box 1: "1 quarter" — same capability stat, now tied to the
+             detailed-signal fallback (Usage and Consumption, since
+             short tags came back "None"), framed as current cost.
+             Aurora's credit-based Build, Grow, and Scale plans are
+             exactly the kind of new revenue model that traditionally
+             takes a quarter to model without a purpose-built process.
 
       Box 2: "3" — count of entries in "Top signals" (SSP Allocation,
              Usage and Consumption, Bundling), not the raw "Signals
              fired" count of 4, since "Event-Based Recognition" fired
              but had no accompanying reasoning to substantiate it.
 
-      Box 3: "8 to 12+ days" — Pillar 2 fallback, chosen because Aurora
-             is privately held with no public/M&A/IPO signal detected.
-             Industries with revenue recognition this complex average
-             at least 8 to 12 or more added days to close under manual
-             processes, exactly the drag Aurora's credit rollovers and
-             bundled plans create today. (Sourced from Value_Pillars
-             doc, Pillar 2 — not displayed on the page.)
+      Box 3: number "8-12+", caption "days added to close" — Pillar 2
+             fallback, chosen because Aurora is privately held with no
+             public/M&A/IPO signal detected. Industries with revenue
+             recognition this complex average at least 8 to 12 or more
+             added days to close under manual processes, exactly the
+             drag Aurora's credit rollovers and bundled plans create
+             today. (Sourced from Value_Pillars doc, Pillar 2 — not
+             displayed on the page.)
     ================================================================
   -->
 
 <!--
     ================================================================
-    PAIN RIGHTREV CAN SOLVE — instructions for Claude Code
+    "WHAT MATTERS MOST" (formerly "Pain RightRev Can Solve") —
+    instructions for Claude Code
     ================================================================
-    Left column of a two-column row. Lists the top three DETAILED
-    SIGNALS for the account (the "Signals fired" / "Top signals" JSON,
-    same source used for the AE quote above, not the short tags used
-    for the title). Use Clay's listed order as the priority order
-    (first-listed signal is the account's top pain point).
+    Left column of a two-column row. Framed as a PRIORITY RANKING, not
+    a sequence or implementation timeline: numbered 1/2/3 by severity
+    (1 = costing the account the most today), with no connecting line
+    between the numbers (a connecting line reads as a roadmap/timeline,
+    which would misrepresent this as a build order RightRev doesn't
+    actually work in, RightRev is a platform, not an agency executing
+    a phased engagement). This is deliberately NOT pitched as a formal
+    "roadmap" deliverable for the same reason. Section title ("What
+    Matters Most") and the one-line intro under it are static, do not
+    rewrite per account.
+
+    LANGUAGE RULE: avoid any wording that implies sequence, an
+    implementation plan, or things happening "first" and "then."
+    Banned phrasing: "starting with," "the order we'd tackle it in,"
+    "step one," "here's how we'd fix it." Use instead: "ranked by,"
+    "the highest-cost item," "what matters most," "in order of
+    impact." The numbers indicate RANK (this is the biggest problem),
+    not STEP (this is what happens first).
+
+    THIS SECTION IS THE FIX HALF OF A TWO-PART ARC. "What's At Stake"
+    directly above states the problem: negative, current-state, what's
+    already true today without RightRev (see that section's own
+    instructions, its framing rule flipped from positive to negative
+    for this reason). "What Matters Most" ranks those problems and
+    resolves each one. Each item's "How RightRev solves it" line is
+    the fix for the cost named right above it in "The Cost." Do not
+    let this section drift back into naming more problems without
+    resolving them, every item names a cost AND closes on the fix for
+    that specific cost. But RightRev's own platform doesn't apply
+    these fixes in sequence, they're all handled by the same platform
+    at once, so nothing in this section should imply a rollout order.
+
+    Lists the top three DETAILED SIGNALS for the account (the "Signals
+    fired" / "Top signals" JSON, same source used for the AE quote
+    above, not the short tags used for the title). Use Clay's listed
+    order as the priority ranking (first-listed signal is the
+    account's highest-cost issue, gets rank "1").
 
     For each of the three:
       1. Signal name (short label, matches the Clay signal name)
@@ -561,7 +713,15 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
            - Bundling, new pricing models, usage or outcome-based
              offerings that finance can't yet support
                               -> delayed or watered-down product
-                                 launch, lost pricing velocity
+                                 launch, lost pricing velocity. Default
+                                 phrasing pattern: "if revenue
+                                 recognition can't support a new
+                                 bundled tier fast enough, the plan
+                                 either ships late or ships in a
+                                 simpler form than the one the market
+                                 was offered" (adjust "bundled tier" to
+                                 whatever the account actually calls
+                                 it: plan, package, model).
            - M&A, PE ownership, active fundraising, pre-IPO signals
                               -> valuation risk, purchase-price
                                  reduction in diligence
@@ -572,6 +732,33 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
          at stake, not just one narrow risk.
       4. HOW RightRev solves it: one line, concrete and specific to
          the mechanic just described, not a generic capability claim.
+      5. ICON: each item gets a small icon next to its signal name
+         ({{PAIN_1_ICON}}, {{PAIN_2_ICON}}, {{PAIN_3_ICON}}), matched
+         to the signal type, not decorative or random. Use this exact
+         icon library, insert the matching SVG snippet verbatim (all
+         use class="pain-icon", already styled to size and color):
+
+         SSP Allocation:
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="9" width="10" height="6" rx="1" fill="currentColor"/><rect x="13" y="9" width="9" height="6" rx="1" fill="currentColor" opacity="0.45"/></svg>
+
+         Bundling:
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+
+         Event-Based Recognition:
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg>
+
+         Contract Modifications:
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+
+         Usage and Consumption:
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 19a7 7 0 1 1 14 0"/><path d="M12 19l3-5"/></svg>
+
+         Any other/unlisted signal type (fallback):
+         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+
+         If a new signal type shows up that isn't in this library yet,
+         use the fallback rather than inventing a new icon on the fly;
+         flag it so the library can be extended deliberately.
 
     Do not repeat the same sentence structure across all three items;
     vary phrasing naturally. No em dashes or double hyphens (see the
@@ -635,7 +822,7 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
              - If several candidates come back, select the ONE that
                most directly reinforces something already stated
                elsewhere on this page, ideally the specific cost named
-               in the matching "Pain RightRev Can Solve" item on the left.
+               in the matching "What Matters Most" item on the left.
                Do not display more than one quote.
              - If Clay gives a named speaker and title, use that as
                the attribution.
@@ -720,22 +907,29 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     audit at full population, and walk into diligence with a system
     of record instead of a folder of explanations.
 
-    Build three items, one per pressure (monetization, audit,
-    valuation), each grounded in THIS account's actual use cases
-    (short tags and detailed signals already established above), not
-    generic industry language. Vary sentence structure across the
-    three; do not template them identically. No em dashes or double
-    hyphens (see the mandatory instruction block at the top of this
-    file).
+    THE THREE HEADLINES ARE FIXED, do not write these per account:
+      1. "Launch any revenue model faster" (monetization)
+      2. "Build audit confidence" (audit)
+      3. "Create a defensible system of record" (valuation)
+    Each gets a checkmark icon next to it (see markup below, class
+    "check-icon", same SVG every time). Only the body text under each
+    headline is written per account, grounded in THIS account's actual
+    use cases (short tags and detailed signals already established
+    above), not generic industry language. Vary sentence structure
+    across the three body texts; do not template them identically. No
+    em dashes or double hyphens (see the mandatory instruction block
+    at the top of this file).
 
-    WORKED EXAMPLE (Axon):
-      Monetization: tied to the "AI Product" short tag and the named
-      enterprise plans (AI Era Plan, Officer Safety Plan).
-      Audit: tied to Axon being public and SEC-reporting, same audit
-      risk already named in the value-box row above.
-      Valuation: tied to "Rapid Growth," since fast growth invites more
-      diligence scrutiny, not less, whether Axon is the acquirer or the
-      one being evaluated.
+    WORKED EXAMPLE (Axon), body text only (headlines are fixed):
+      Under "Launch any revenue model faster": tied to the "AI
+      Product" short tag and the named enterprise plans (AI Era Plan,
+      Officer Safety Plan).
+      Under "Build audit confidence": tied to Axon being public and
+      SEC-reporting, same audit risk already named in the value-box
+      row above.
+      Under "Create a defensible system of record": tied to "Rapid
+      Growth," since fast growth invites more diligence scrutiny, not
+      less, whether Axon is the acquirer or the one being evaluated.
     ================================================================
   -->
 
@@ -760,18 +954,34 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     Build three items following that same arc (what's already working,
     where it's starting to strain, what the instrument changes), each
     grounded in THIS account's actual detailed signals (the same ones
-    used in the "Pain RightRev Can Solve" column above). Do not frame this
+    used in the "What Matters Most" column above). Do not frame this
     row as replacing the team or implying their current process is
     inadequate; the doc is explicit that this should honor the work
     already done and name the rupture without blaming them. Vary
-    sentence structure across the three items. No em dashes or double
+    sentence structure across the three items. Each headline gets a
+    checkmark icon next to it (see markup below, class "check-icon",
+    same SVG every time, matching Row 1). No em dashes or double
     hyphens (see the mandatory instruction block at the top of this
     file).
+
+    THE RESOLUTION ITEM'S CLOSING PHRASE: end on where the team's time
+    goes now, not just what stops. "Moves from manual spreadsheets to
+    providing analysis and strategic decision-making" reads as a
+    promotion for the team; "moves from rebuilding spreadsheets to
+    reviewing exceptions" (the old pattern) undersells it, reviewing
+    exceptions still sounds like maintenance work. Always land on the
+    more elevated framing.
 
     WORKED EXAMPLE (Axon): built around the same three detailed
     signals already named above (SSP Allocation, Contract
     Modifications, Bundling), framed through the status quo, conflict,
     resolution shape rather than repeated as a flat list.
+
+    WORKED EXAMPLE (BambooHR), resolution closing phrase: "RightRev
+    handles SSP allocation, bundling, and event-based recognition
+    automatically, so the close gets shorter and the team's expertise
+    moves from manual spreadsheets to providing analysis and strategic
+    decision-making."
     ================================================================
   -->
 
@@ -788,7 +998,6 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ACCOUNT_NAME}} · RightRev</title>
 <style>
-
   :root {
     --rr-rightrev-green: #69C04B;
     --rr-green: #078732;
@@ -797,6 +1006,9 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
     --rr-light-green: #F1FFEE;
     --rr-soft-mint: #C2FFC9;
     --rr-orange: #A65E17;
+    /* Intentional off-palette exception, see the comment above
+       .value-number-cell for why this exists and where it's used. */
+    --rr-alert-red: #E5342A;
     --rr-gray: #3C4344;
     --rr-border: rgba(8,31,23,0.12);
     --rr-border-on-dark: rgba(255,255,255,0.22);
@@ -861,8 +1073,6 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
 
   .ae-quote { position: relative; z-index: 1; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rr-border-on-dark); }
   .quote-text { font-size: 1.0625rem; font-style: italic; line-height: 1.67; color: var(--rr-light-green); }
-  .quote-attribution { font-family: var(--rr-font-body); font-size: 0.875rem; font-weight: 500; margin-top: 12px; color: #fff; }
-  .quote-attribution span { color: rgba(241,255,238,0.82); font-weight: 400; }
 
   /* ─── Cards (shared light-card look) ──────── */
   .s-account-team, .s-pain-solve, .s-audience-row {
@@ -874,6 +1084,7 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
     font-size: 0.9375rem; text-transform: uppercase; letter-spacing: 0.2em;
     color: var(--rr-forest); margin-bottom: 18px;
   }
+  .pain-solve-intro { font-size: 0.9375rem; line-height: 1.5; color: var(--rr-gray); margin: -10px 0 18px; }
 
   /* ─── Account team ────────────────────────── */
   .s-account-team { display: flex; flex-direction: column; }
@@ -904,29 +1115,50 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
   /* ─── Value boxes ─────────────────────────── */
   .s-value-boxes { display: flex; flex-direction: column; gap: 16px; }
   .value-box {
-    display: grid; grid-template-columns: 160px 1fr; align-items: stretch; gap: 0;
-    background: #fff; border: 1px solid var(--rr-border);
+    display: grid; grid-template-columns: 190px 1fr; align-items: stretch; gap: 0;
+    background: #fff; border: 3px solid var(--rr-border);
     border-radius: 20px; padding: 0; overflow: hidden; box-shadow: var(--rr-shadow);
   }
   /* Number cell typography is intentionally small: the box's height
      should always be driven by the white body copy on the right, not
-     by the green number/caption on the left. If a future number or
-     caption runs long, shrink further here rather than letting the
-     box grow to fit it. */
+     by the number/caption on the left. If a future number or caption
+     runs long, shrink further here rather than letting the box grow
+     to fit it.
+     Number color is --rr-alert-red, a DELIBERATE EXCEPTION to the
+     brand palette, not an oversight. This section is the negative/
+     current-state half of the page (see the framing rule above), and
+     needs to read as "problem" instantly, more urgently than the
+     brand's own orange accent does. Earlier version of this rule used
+     --rr-orange (still used for "The Cost" text elsewhere on the
+     page) reasoning that green reads as success and works against
+     this section; that's still true, but red reads as alarm faster
+     and more universally than orange does, which is worth more here
+     than palette purity.
+     A shape-based treatment (top accent stripe + alert-triangle icon)
+     was tried and reverted per direct feedback, not because the
+     reasoning was wrong but because it didn't land visually. The
+     white card border was thickened (1px to 2px, then to 3px) instead, as a
+     simpler, cleaner way to make each box read as more prominent.
+     Keep the red exception SCOPED to exactly this module (the number
+     and caption), do not let it bleed into any other part of the page
+     (cost callouts, labels, anything else) or it stops being a
+     deliberate accent and starts looking like an inconsistent
+     palette. If a future brand refresh adds an official alert color,
+     replace --rr-alert-red's value and drop this comment. */
   .value-number-cell {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 18px 16px; background: var(--rr-forest); color: #fff;
   }
   .value-number {
-    font-family: var(--rr-font-display); font-weight: 400;
-    font-size: 2rem; line-height: 1.05; letter-spacing: -0.02em;
-    color: var(--rr-rightrev-green); font-variant-numeric: tabular-nums;
+    font-family: var(--rr-font-display); font-weight: 700;
+    font-size: 2.375rem; line-height: 1.05; letter-spacing: -0.02em;
+    color: var(--rr-alert-red); font-variant-numeric: tabular-nums;
     text-align: center; font-feature-settings: "tnum" 1;
   }
   .value-number-caption {
-    font-family: var(--rr-font-body); font-weight: 500;
-    font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--rr-light-green); text-align: center; margin-top: 5px;
+    font-family: var(--rr-font-body); font-weight: 600;
+    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: rgba(255,255,255,0.72); text-align: center; margin-top: 6px;
   }
   .value-explain-cell { padding: 24px 30px; align-self: center; }
   .value-explain-title { font-size: 1rem; font-weight: 700; color: var(--rr-dark); margin-bottom: 5px; }
@@ -940,13 +1172,30 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
   /* ─── Two-column row ──────────────────────── */
   .s-two-col { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-items: stretch; }
 
-  /* ─── Pain / solve ────────────────────────── */
-  .pain-item { padding: 16px 0; border-top: 1px solid var(--rr-border); }
+  /* ─── Pain / solve (numbered path) ────────── */
+  .pain-item {
+    display: grid; grid-template-columns: 32px 1fr; column-gap: 14px;
+    padding: 16px 0; border-top: 1px solid var(--rr-border); position: relative;
+  }
   .pain-item:first-of-type { border-top: none; padding-top: 0; }
+  .pain-step-col { position: relative; display: flex; justify-content: center; }
+  .pain-step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--rr-forest); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--rr-font-display); font-weight: 700; font-size: 0.875rem;
+    position: relative; z-index: 1; flex-shrink: 0;
+  }
+  /* No connecting line between numbers on purpose: these are a
+     priority ranking (which issue costs the most), not sequential
+     build steps. A connecting line reads as a timeline/roadmap, which
+     would misrepresent this as an implementation order. */
+  .pain-signal-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .pain-icon { flex-shrink: 0; width: 18px; height: 18px; color: var(--rr-rightrev-green); }
   .pain-signal {
     font-family: var(--rr-font-display); font-weight: 700;
     font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.14em;
-    color: var(--rr-forest); margin-bottom: 6px;
+    color: var(--rr-forest); margin-bottom: 0;
   }
   .pain-why { font-size: 1rem; line-height: 1.6; color: var(--rr-gray); margin-bottom: 10px; }
   .pain-cost-label {
@@ -1020,7 +1269,9 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
   /* ─── Audience rows ───────────────────────── */
   .audience-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 4px; }
   .audience-item { border-top: 1px solid var(--rr-border); padding-top: 16px; }
-  .audience-item-title { font-family: var(--rr-font-body); font-size: 1rem; font-weight: 700; color: var(--rr-forest); margin-bottom: 6px; }
+  .audience-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .check-icon { flex-shrink: 0; width: 18px; height: 18px; }
+  .audience-item-title { font-family: var(--rr-font-body); font-size: 1rem; font-weight: 700; color: var(--rr-forest); margin-bottom: 0; }
   .audience-item-text { font-size: 1rem; line-height: 1.55; color: var(--rr-gray); }
 
   /* ─── Footer ──────────────────────────────── */
@@ -1057,7 +1308,6 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
       <h1 class="title-headline">{{VALUE_DRIVER}} for <span class="acct-highlight">{{ACCOUNT_NAME}}</span></h1>
       <div class="ae-quote">
         <div class="quote-text">{{AE_QUOTE}}</div>
-        <div class="quote-attribution">{{REP_NAME}} <span>· Account Executive, RightRev</span></div>
       </div>
     </div>
 
@@ -1119,44 +1369,54 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
   
   <div class="s-two-col">
     <div class="s-pain-solve">
-      <div class="section-title">Pain RightRev Can Solve</div>
+      <div class="section-title">What Matters Most</div>
+      <div class="pain-solve-intro">Of everything at stake above, here's what matters most, ranked by where the cost is highest today.</div>
 
       <div class="pain-item">
-        <div class="pain-signal">{{PAIN_1_SIGNAL}}</div>
-        <div class="pain-why">{{PAIN_1_WHY}}</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">{{PAIN_1_COST}}</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">{{PAIN_1_FIX}}</div>
+        <div class="pain-step-col"><div class="pain-step-num">1</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row">{{PAIN_1_ICON}}<div class="pain-signal">{{PAIN_1_SIGNAL}}</div></div>
+          <div class="pain-why">{{PAIN_1_WHY}}</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">{{PAIN_1_COST}}</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">{{PAIN_1_FIX}}</div>
+          </div>
         </div>
       </div>
 
       <div class="pain-item">
-        <div class="pain-signal">{{PAIN_2_SIGNAL}}</div>
-        <div class="pain-why">{{PAIN_2_WHY}}</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">{{PAIN_2_COST}}</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">{{PAIN_2_FIX}}</div>
+        <div class="pain-step-col"><div class="pain-step-num">2</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row">{{PAIN_2_ICON}}<div class="pain-signal">{{PAIN_2_SIGNAL}}</div></div>
+          <div class="pain-why">{{PAIN_2_WHY}}</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">{{PAIN_2_COST}}</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">{{PAIN_2_FIX}}</div>
+          </div>
         </div>
       </div>
 
       <div class="pain-item">
-        <div class="pain-signal">{{PAIN_3_SIGNAL}}</div>
-        <div class="pain-why">{{PAIN_3_WHY}}</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">{{PAIN_3_COST}}</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">{{PAIN_3_FIX}}</div>
+        <div class="pain-step-col"><div class="pain-step-num">3</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row">{{PAIN_3_ICON}}<div class="pain-signal">{{PAIN_3_SIGNAL}}</div></div>
+          <div class="pain-why">{{PAIN_3_WHY}}</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">{{PAIN_3_COST}}</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">{{PAIN_3_FIX}}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1192,15 +1452,15 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
     <div class="section-title">How RightRev Helps Finance Teams Drive Growth</div>
     <div class="audience-items">
       <div class="audience-item">
-        <div class="audience-item-title">{{FINANCE_MONETIZATION_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Launch any revenue model faster</div></div>
         <div class="audience-item-text">{{FINANCE_MONETIZATION_TEXT}}</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">{{FINANCE_AUDIT_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Build audit confidence</div></div>
         <div class="audience-item-text">{{FINANCE_AUDIT_TEXT}}</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">{{FINANCE_VALUATION_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Create a defensible system of record</div></div>
         <div class="audience-item-text">{{FINANCE_VALUATION_TEXT}}</div>
       </div>
     </div>
@@ -1211,15 +1471,15 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
     <div class="section-title">How RightRev Helps Accounting Teams Keep Up</div>
     <div class="audience-items">
       <div class="audience-item">
-        <div class="audience-item-title">{{ACCOUNTING_STATUS_QUO_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_STATUS_QUO_TITLE}}</div></div>
         <div class="audience-item-text">{{ACCOUNTING_STATUS_QUO_TEXT}}</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">{{ACCOUNTING_CONFLICT_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_CONFLICT_TITLE}}</div></div>
         <div class="audience-item-text">{{ACCOUNTING_CONFLICT_TEXT}}</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">{{ACCOUNTING_RESOLUTION_TITLE}}</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_RESOLUTION_TITLE}}</div></div>
         <div class="audience-item-text">{{ACCOUNTING_RESOLUTION_TEXT}}</div>
       </div>
     </div>
