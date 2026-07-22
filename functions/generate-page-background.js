@@ -74,10 +74,10 @@ TITLE VALUE DRIVER:
 - Must be a 2-5 word phrase a CFO would stop on. Not generic like "Better Revenue Recognition."
 - Source it from the SHORT TAGS (AI Product, Rapid Growth, New Product, etc.) which represent active business challenges the org is navigating right now. Do NOT source from the rev rec complexity signals (SSP Allocation, Bundling, etc.) — those are the mechanism, not the driver.
 
-VALUE BOXES — how to choose the three numbers:
-- Box 1: A RightRev CAPABILITY stat matched to the account's SHORT TAGS. Pull from RightRev's own proof points (e.g. "a quarter to a day" for modeling a new revenue arrangement). Pick whichever capability stat most directly answers the short-tag challenge.
-- Box 2: An account-SPECIFIC count (number of products, contracts, employees, revenue scale) that makes the complexity concrete for this account. Source from Clay data.
-- Box 3: A RISK or PROOF stat — either a downside risk this account faces or a proof point from an anonymized RightRev customer ("one RightRev customer" — never presented as a guaranteed outcome). All three boxes should build one coherent narrative, not three random stats.
+VALUE BOXES — this is an analysis task, not three fixed slots:
+- There is no fixed Box 1 / Box 2 / Box 3 type. Read everything available (Clay's data plus all five source docs), build a candidate list of plausible stakes (monetization/speed-to-ship, operational complexity, audit/compliance exposure, valuation/diligence exposure, manual-effort/close-cycle drag), then rank each candidate by how strongly evidenced it is for THIS account and how severe it is, and pick the top three.
+- Reject weakly-evidenced candidates even if dramatic (never assign a valuation/M&A stake to an account with no M&A/funding signal). Don't pick two candidates that are really the same stake restated.
+- For each of the three chosen, prefer a real account-specific number pulled from Clay's own reasoning text (a growth rate, a reach number, a launch timeframe) over a generic industry stat; only fall back to a generic stat (from Position deck, Value_Pillars, or the ROI Library) when nothing account-specific exists for that stake. See the full instructions below for the complete step-by-step process and worked examples.
 
 PAIN SIGNALS:
 - Number 1/2/3 by severity — 1 = costing the account the most today.
@@ -113,9 +113,9 @@ FIELD MAPPING FROM CLAY DATA:
 - {{REP_EMAIL}} — "AccountOwnerEmail" field  
 - {{REP_MEETING_LINK}} — "OwnerMeetingLink" field
 - {{REP_LINKEDIN}} — "AccountOwnerLinkedIn" field
-- {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — capability stat box
-- {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — account-specific count box
-- {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — risk/proof stat box
+- {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — first-ranked stake (see VALUE BOXES analysis process, not a fixed type)
+- {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — second-ranked stake (see VALUE BOXES analysis process, not a fixed type)
+- {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — third-ranked stake (see VALUE BOXES analysis process, not a fixed type)
 - {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}}, {{PAIN_1_ICON}} — top signal from "RevRecComplexityResponse" field (this is a JSON string — parse it to get "Top signals"). PAIN_SIGNAL is the signal name in ALL CAPS. PAIN_WHY is why this matters for this account. PAIN_COST is what it costs them. PAIN_FIX is how RightRev solves it. PAIN_ICON is one of the pre-approved inline SVG icons in the detailed instructions below, matched to the signal's mechanic.
 - {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}}, {{PAIN_2_ICON}} — second signal, same approach
 - {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}}, {{PAIN_3_ICON}} — third signal, same approach
@@ -398,69 +398,121 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     ================================================================
     Three boxes. Each box: a number (left) + an explanation of what
     that number means for THIS account (right). Together the three
-    should build the case for the single biggest value RightRev
-    provides this account — not three random stats, a chosen trio
-    that supports one narrative.
+    should build the case for the three biggest things genuinely at
+    stake for THIS account — not three stats poured into three fixed
+    slots, three things Claude Code has actually decided matter most
+    after reading everything available.
 
-    HOW TO CHOOSE THE THREE NUMBERS:
+    THIS IS AN ANALYSIS TASK, NOT A FILL-IN-THE-TEMPLATE TASK. An
+    earlier version of this section assigned each box a fixed TYPE
+    (Box 1 always a capability stat, Box 2 always a signal count, Box
+    3 always a risk stat) and only let the account's data influence
+    which specific number filled that fixed slot. That was still a
+    formula wearing the appearance of analysis. Do not do that. There
+    is no fixed Box 1 / Box 2 / Box 3 assignment. All three boxes draw
+    from the same pool of candidates below, and which three actually
+    make the page is a judgment call made fresh for each account.
 
-      Box 1 — RightRev CAPABILITY stat, matched to the account's
-      SHORT TAGS (same signal system used for the title). Pull from
-      RightRev's own proof points in Position_direction_pptx / the
-      Architect capability set (e.g. "a quarter → a day" for modeling
-      a new revenue arrangement). Pick whichever capability stat most
-      directly answers the short-tag challenge (e.g. "AI Product" /
-      new pricing launches → the speed-to-recognize stat). When
-      naming a RightRev product (Architect, Assistant, Agents), always
-      say "RightRev's [Name] product" on first mention in a section,
-      not just "[Name]" alone, since "the Architect" or "Architect
-      turns X into Y" reads ambiguously as a job title or a person
-      rather than a product.
+    STEP 0, MANDATORY, BEFORE ANYTHING ELSE: read through the
+    account's own short-tag reasoning AND detailed-signal reasoning
+    text (the actual sentences Clay wrote about this account) and pull
+    out every concrete, quantifiable fact already stated about THIS
+    account: a growth percentage, a dollar or revenue figure, a count
+    of products/tools/tiers, a number of people or customers reached, a
+    timeframe a launch took, anything with a real number attached to a
+    real fact about them. This is the raw material an account-specific
+    stake gets built from, prefer these over a generic industry stat
+    wherever a real one exists for the stake in question.
 
-      Box 2 — ACCOUNT-SPECIFIC number, drawn directly from Clay's data
-      about this account (not the generic value pillar docs). Default
-      to a count of DETAILED SIGNALS, specifically the number of
-      entries in "Top signals" (the ones with actual sourced reasoning
-      behind them), not the raw "Signals fired" count if that list is
-      longer, since an unelaborated signal name isn't something this
-      page can substantiate. If no clean count applies, use another
-      concrete fact particular to them (a reported growth/revenue
-      figure from the news/signal sourcing, etc). Purpose: prove this
-      isn't a generic pitch, the page already knows something true
-      about them.
+    STEP 1: READ EVERYTHING, NOT JUST CLAY'S ROW. Before ranking
+    anything, actually draw on all of it:
+      - 001_CFO_RightRev_Position_Arc_1 ("The Missing Layer," CFO):
+        monetization, audit, and valuation as the three simultaneous
+        pressures on a CFO
+      - 002_CONTROLLER_The_Missing_Layer (Controller): the practitioner
+        team's own strain, the pangs of a system starting to crack
+      - Position_direction_pptx: RightRev's own capability proof
+        points (e.g. the Architect's "a quarter to a day" claim)
+      - Value_Pillars__Detailed_Perspectives: the four value pillars
+        (remove bottleneck, replace manual work, preserve audit-grade
+        posture, accelerate new monetization) and their specific risk/
+        proof stats
+      - RightRev_ROI_Message_Library: efficiency gains, control
+        improvements, the anonymized customer proof point, the common
+        pain pattern, the day-one/ongoing ROI horizon
+      - Clay's own data for this account: short tags, detailed
+        signals, account profile (public/private, growth stage, etc)
 
-      CONNECTION TO "WHAT MATTERS MOST" BELOW: this count is not a
-      coincidence, it's normally the same count as the number of
-      numbered items in the "What Matters Most" section further down
-      the page (both draw from the same "Top signals" entries). Make
-      that connection explicit in Box 2's body text with a closing
-      clause pointing down the page, e.g. "...see how each one ranks
-      below." Do NOT use sequence language here ("see the order we'd
-      tackle all three in") — that section is a priority ranking, not
-      a rollout plan. Don't add this pointer in Box 1 or Box 3, only
-      Box 2, since it's the one that's actually counting the same
-      items, not a different stat.
+    STEP 2: BUILD THE CANDIDATE LIST. Against everything in Step 1,
+    identify every stake that's PLAUSIBLE for this account, typically
+    drawn from categories like:
+      - Monetization / speed-to-ship: can they ship the pricing model
+        or tier they want to, fast enough? (sourced from Position
+        deck capability stats, OR an account-specific growth/reach/
+        launch-cadence number from Step 0)
+      - Operational complexity / manual load: how many distinct
+        rev-rec mechanics are already live and handled by hand today?
+        (count of the account's own "Top signals" entries)
+      - Audit / compliance exposure: how exposed are they to SEC
+        scrutiny or material weakness? (Value_Pillars Pillar 3 stats,
+        strongest when the account is public/SEC-reporting)
+      - Valuation / diligence exposure: does an M&A, funding, or IPO
+        event put revenue recognition in front of a buyer or investor?
+        (Value_Pillars Pillar 3 M&A/IPO stats, only when that signal
+        actually exists for the account, do not invent one)
+      - Manual-effort / close-cycle drag: what is the actual time or
+        headcount cost of doing this by hand today? (Value_Pillars
+        Pillar 2 and ROI Message Library stats, close-cycle length,
+        hours per year, the anonymized customer proof point)
+    This list is illustrative, not exhaustive, if something else in
+    the docs is genuinely a bigger stake for this account, use it.
 
-      Box 3 — RISK/PROOF stat from Value_Pillars__Detailed_Perspectives,
-      chosen by account profile:
-        - Public company / SEC-reporting  → SEC comment-letter or
-          material-weakness stat (Pillar 3)
-        - Active M&A, PE-owned, late-stage → M&A purchase-price-
-          reduction stat (Pillar 3)
-        - Pre-IPO                          → IPO material-weakness stat
-          (Pillar 3)
-        - Manual/headcount-strain signals, OR no public/M&A/IPO signal
-          exists at all → close-cycle-length stat (Pillar 2). This is
-          the default fallback: most accounts will not have a clean
-          Pillar 3 trigger, and reaching for one anyway (implying an
-          IPO or acquisition that was never actually signaled) is a
-          bigger credibility risk than falling back to the close-cycle
-          stat, which applies to any account with real manual
-          complexity regardless of ownership structure or governance
-          status.
-      These are sourced claims from the value pillar docs, not RightRev's
-      own numbers — Claude Code should still know where each one came
-      from internally, but the citation is NOT shown on the page.
+    STEP 3: RANK BY EVIDENCE AND SEVERITY, PICK THE TOP THREE. For
+    each candidate, ask two questions: (a) is there real evidence for
+    this in the account's own data (a fired signal, a quoted number,
+    an account profile fact), not just a theoretical possibility any
+    account could have, and (b) how severe or urgent is it relative to
+    the other candidates. Rank on both, take the top three, and reject
+    weakly-evidenced candidates even if they'd be dramatic; a stronger
+    stat with real evidence beats a punchier one invented for an
+    account profile that doesn't actually support it (do not assign a
+    valuation/M&A stake to an account with no M&A/funding signal, for
+    instance, even though it's a compelling category in the abstract).
+    Avoid picking two candidates that are really the same stake
+    restated (e.g. audit exposure and material-weakness risk overlap
+    heavily, don't use both).
+
+    STEP 4: BUILD EACH CHOSEN STAKE INTO A BOX. For each of the three
+    selected, apply Step 0 first, an account-specific number beats a
+    generic one whenever a real one exists for that particular stake.
+    When no account-specific number is available for a chosen stake,
+    pull the best-fitting stat from whichever source doc actually
+    supports it (Value_Pillars for risk stats, Position deck for
+    capability stats, ROI Message Library for efficiency/effort stats).
+    Never force an account-specific number that doesn't genuinely fit
+    just to avoid a generic stat, a legitimate generic stat, correctly
+    sourced, beats a stretched or invented account-specific one.
+    When naming a RightRev product (Architect, Assistant, Agents),
+    always say "RightRev's [Name] product" on first mention in a
+    section, not just "[Name]" alone, since "the Architect" or
+    "Architect turns X into Y" reads ambiguously as a job title or a
+    person rather than a product.
+
+    IF THE COMPLEXITY-COUNT STAKE (operational complexity / manual
+    load) IS ONE OF THE THREE CHOSEN: its count is normally the same
+    as the number of numbered items in the "What Matters Most" section
+    further down the page (both draw from the same "Top signals"
+    entries). Make that connection explicit in that box's body text
+    with a closing clause pointing down the page, e.g. "...see how
+    each one ranks below." Do NOT use sequence language here ("see the
+    order we'd tackle all three in") — that section is a priority
+    ranking, not a rollout plan. If this stake wasn't one of the three
+    chosen for this account, there's nothing to connect, don't force
+    the pointer into whichever box happens to have a number in it.
+
+    These are sourced claims from the value pillar docs, not RightRev's
+    own numbers — Claude Code should still know where each one came
+    from internally, but the citation is NOT shown on the page.
 
     HEADING ABOVE THE BOXES: a static section heading sits above this
     row (see markup below), not a merge field. Keep it as-is across
@@ -686,9 +738,35 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
 
     Lists the top three DETAILED SIGNALS for the account (the "Signals
     fired" / "Top signals" JSON, same source used for the AE quote
-    above, not the short tags used for the title). Use Clay's listed
-    order as the priority ranking (first-listed signal is the
-    account's highest-cost issue, gets rank "1").
+    above, not the short tags used for the title).
+
+    DO NOT MECHANICALLY ACCEPT CLAY'S LISTED ORDER AS THE RANKING.
+    Clay's order is a data point, not a verdict, the same discipline
+    used in "What's At Stake" above applies here: analyze, don't
+    default. For each signal Clay fired with real supporting reasoning,
+    work out its actual cost (using the cost-mapping rules below), then
+    rank the three using this heuristic, in priority order:
+      1. Whichever signal's cost most directly reinforces the #1
+         stake already chosen in "What's At Stake" above gets rank 1.
+         The two sections should read as one connected argument, not
+         two independently-generated lists that happen to share a
+         topic, if the biggest stake above was a monetization/speed
+         problem, the signal whose cost is a delayed or watered-down
+         launch is the natural rank 1 here, not whichever signal Clay
+         happened to list first.
+      2. Rank the remaining two by severity of consequence, using
+         Value_Pillars' own framing of which risks are worse: audit
+         and restatement risk outranks a delayed launch, which
+         outranks a delayed close. This reflects the source doc's own
+         emphasis, audit/restatement issues carry outsized, sometimes
+         one-time-severe consequences (material weakness disclosure,
+         stock price drops, SEC scrutiny), where close-cycle drag,
+         while a real and recurring cost, is comparatively contained.
+      3. If Clay's original order already matches what steps 1 and 2
+         produce, keep it, that's a legitimate outcome, not a sign the
+         check was skipped. If analysis produces a different order,
+         use the analyzed order, and be able to explain why each item
+         outranks the one below it.
 
     For each of the three:
       1. Signal name (short label, matches the Clay signal name)
@@ -764,12 +842,35 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     vary phrasing naturally. No em dashes or double hyphens (see the
     mandatory instruction block at the top of this file).
 
-    WORKED EXAMPLE (Axon): top three detailed signals were SSP
-    Allocation, Contract Modifications, and Bundling, in that order.
-    Costs assigned for variety: SSP Allocation -> delayed close,
-    Contract Modifications -> audit and restatement risk, Bundling ->
-    delayed product launch (since Axon's bundles ARE its new AI
-    product plans shipping to market). Built out below.
+    WORKED EXAMPLE (Axon), re-ranking in action: Clay's listed order
+    was SSP Allocation, Contract Modifications, Bundling. Applying the
+    heuristic: Axon's #1 stake in "What's At Stake" above was
+    monetization/speed (the 34% YoY growth stake), so Bundling (cost:
+    delayed/watered-down launch) is the strongest candidate for rank 1
+    on narrative grounds, it's the signal that most directly threatens
+    that same stake. Contract Modifications (cost: audit and
+    restatement risk) outranks SSP Allocation (cost: delayed close) on
+    severity grounds per the heuristic above. Reasoning both ways
+    together: Bundling's launch-delay cost is severe on its own AND
+    reinforces the account's top identified stake, so it takes rank 1;
+    Contract Modifications' audit risk is the next most severe
+    consequence, rank 2; SSP Allocation's close delay, while real, is
+    the most contained of the three, rank 3. Final order used on the
+    page: Bundling, Contract Modifications, SSP Allocation, not Clay's
+    original SSP Allocation, Contract Modifications, Bundling.
+
+    WORKED EXAMPLE (BambooHR), same heuristic: Clay's listed order was
+    SSP Allocation, Bundling, Event-Based Recognition. BambooHR's #1
+    stake above was also monetization/speed (the 100,000+ reach
+    stake), so Bundling again takes rank 1 on narrative grounds, its
+    delayed-launch cost is the signal most directly tied to that stake.
+    Between the remaining two, Event-Based Recognition's audit and
+    restatement risk outranks SSP Allocation's delayed-close cost on
+    severity grounds, even though BambooHR is privately held and
+    doesn't have the public-company SEC amplifier Axon's version of
+    this cost carries, audit and restatement risk is still the more
+    severe consequence in general. Final order: Bundling, Event-Based
+    Recognition, SSP Allocation, not Clay's original order.
     ================================================================
   -->
 
