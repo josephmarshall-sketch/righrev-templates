@@ -1118,6 +1118,9 @@ exports.handler = async (event) => {
 
   const accountData = JSON.stringify(data, null, 2);
 
+  console.log('Starting Claude call. Data keys:', Object.keys(data));
+  console.log('Slug:', slug);
+
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -2266,6 +2269,9 @@ TEMPLATE:
   });
 
   const claudeData = await claudeRes.json();
+  console.log('Claude response status:', claudeRes.status);
+  console.log('Claude response preview:', JSON.stringify(claudeData).slice(0, 500));
+
   const textBlock = claudeData.content && claudeData.content.find(b => b.type === 'text');
 
   if (!textBlock) {
@@ -2307,8 +2313,10 @@ TEMPLATE:
     })
   });
 
+  console.log('GitHub push status:', githubRes.status);
   if (!githubRes.ok) {
     const err = await githubRes.json();
+    console.log('GitHub error:', JSON.stringify(err));
     return { statusCode: 500, body: JSON.stringify({ error: 'GitHub push failed', details: err }) };
   }
 
