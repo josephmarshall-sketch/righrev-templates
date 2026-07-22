@@ -1188,6 +1188,8 @@ TEMPLATE:
 
   const fullResponse = textBlock.text;
   const lines = fullResponse.split('\n');
+  const startLine = lines[0].startsWith('SLUG:') ? 2 : 0;
+  const html = lines.slice(startLine).join('\n').trim().replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64);
 
   const filePath = `accounts/${slug}/index.html`;
   const content = Buffer.from(html).toString('base64');
