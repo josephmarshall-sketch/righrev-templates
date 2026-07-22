@@ -1118,8 +1118,11 @@ exports.handler = async (event) => {
 
   const accountData = JSON.stringify(data, null, 2);
 
+  const accountName = data['AccountName'] || data['Account Name'] || 'account';
+  const slug = accountName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  console.log('Account name:', accountName, '| Slug:', slug);
+
   console.log('Starting Claude call. Data keys:', Object.keys(data));
-  console.log('Slug:', slug);
 
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -1140,21 +1143,21 @@ CRITICAL OUTPUT FORMAT:
 - Return NOTHING else — no explanation, no markdown, no code fences
 
 FIELD MAPPING FROM CLAY DATA:
-- {{ACCOUNT_NAME}} — "Account Name" field
+- {{ACCOUNT_NAME}} — "AccountName" field
 - {{ACCOUNT_TAGLINE}} — short industry/location descriptor e.g. "Public Safety Technology · Scottsdale, AZ" — infer from data
 - {{VALUE_DRIVER}} — 2-5 word outcome phrase per the title pillar logic in the template comments
 - {{AE_QUOTE}} — first-person quote from the rep about the account's top pain
-- {{REP_NAME}} — "Account Owner Name" field
-- {{REP_EMAIL}} — "Account Owner Email" field  
-- {{REP_MEETING_LINK}} — "Owner Meeting Link" field
-- {{REP_LINKEDIN}} — "Account Owner Linkedin" field
+- {{REP_NAME}} — "AccountOwnerName" field
+- {{REP_EMAIL}} — "AccountOwnerEmail" field  
+- {{REP_MEETING_LINK}} — "OwnerMeetingLink" field
+- {{REP_LINKEDIN}} — "AccountOwnerLinkedIn" field
 - {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — capability stat box
 - {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — account-specific count box
 - {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — risk/proof stat box
-- {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}} — top signal from Rev Rec Complexity
-- {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}} — second signal
-- {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}} — third signal
-- {{CASE_STUDY_COMPANY}}, {{CASE_STUDY_CHALLENGE}}, {{CASE_STUDY_PROOF}}, {{CASE_STUDY_QUOTE}}, {{CASE_STUDY_QUOTE_ATTRIBUTION}}, {{CASE_STUDY_URL}}, {{CASE_STUDY_BUTTON_LABEL}} — from "Case Study Recommendation" field
+- {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}} — top signal from "RevRecComplexityResponse" field (this is a JSON string — parse it to get "Top signals"). PAIN_SIGNAL is the signal name in ALL CAPS. PAIN_WHY is why this matters for this account. PAIN_COST is what it costs them. PAIN_FIX is how RightRev solves it.
+- {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}} — second signal, same approach
+- {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}} — third signal, same approach
+- {{CASE_STUDY_COMPANY}}, {{CASE_STUDY_CHALLENGE}}, {{CASE_STUDY_PROOF}}, {{CASE_STUDY_QUOTE}}, {{CASE_STUDY_QUOTE_ATTRIBUTION}}, {{CASE_STUDY_URL}}, {{CASE_STUDY_BUTTON_LABEL}} — from "CaseStudyRecommendation" field. This field is a JSON object with a "response" property containing markdown text. Parse the case study name, why it fits, the case study link URL, and pull one verbatim quote from the quotes listed. Use the case study link as {{CASE_STUDY_URL}}. Never invent quotes — only use quotes explicitly listed in the response field.
 - {{ASSESSMENT_CTA_TEXT}} — closing CTA copy grounded in account signals
 - {{FINANCE_MONETIZATION_TITLE}}, {{FINANCE_MONETIZATION_TEXT}} — CFO monetization item
 - {{FINANCE_AUDIT_TITLE}}, {{FINANCE_AUDIT_TEXT}} — CFO audit item
@@ -2280,12 +2283,7 @@ TEMPLATE:
 
   const fullResponse = textBlock.text;
   const lines = fullResponse.split('\n');
-  const slugLine = lines[0].trim();
-  const slug = slugLine.startsWith('SLUG:')
-    ? slugLine.replace('SLUG:', '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    : 'account';
-
-  const html = lines.slice(2).join('\n').trim();
+  const html = lines.join('\n').trim();
   const filePath = `accounts/${slug}/index.html`;
   const content = Buffer.from(html).toString('base64');
 
