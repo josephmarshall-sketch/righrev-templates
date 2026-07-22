@@ -20,7 +20,6 @@
     font-display: swap;
   }
 @import url("https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700&display=swap");
-
   :root {
     --rr-rightrev-green: #69C04B;
     --rr-green: #078732;
@@ -29,6 +28,9 @@
     --rr-light-green: #F1FFEE;
     --rr-soft-mint: #C2FFC9;
     --rr-orange: #A65E17;
+    /* Intentional off-palette exception, see the comment above
+       .value-number-cell for why this exists and where it's used. */
+    --rr-alert-red: #E5342A;
     --rr-gray: #3C4344;
     --rr-border: rgba(8,31,23,0.12);
     --rr-border-on-dark: rgba(255,255,255,0.22);
@@ -93,8 +95,6 @@
 
   .ae-quote { position: relative; z-index: 1; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rr-border-on-dark); }
   .quote-text { font-size: 1.0625rem; font-style: italic; line-height: 1.67; color: var(--rr-light-green); }
-  .quote-attribution { font-family: var(--rr-font-body); font-size: 0.875rem; font-weight: 500; margin-top: 12px; color: #fff; }
-  .quote-attribution span { color: rgba(241,255,238,0.82); font-weight: 400; }
 
   /* ─── Cards (shared light-card look) ──────── */
   .s-account-team, .s-pain-solve, .s-audience-row {
@@ -106,6 +106,7 @@
     font-size: 0.9375rem; text-transform: uppercase; letter-spacing: 0.2em;
     color: var(--rr-forest); margin-bottom: 18px;
   }
+  .pain-solve-intro { font-size: 0.9375rem; line-height: 1.5; color: var(--rr-gray); margin: -10px 0 18px; }
 
   /* ─── Account team ────────────────────────── */
   .s-account-team { display: flex; flex-direction: column; }
@@ -136,24 +137,50 @@
   /* ─── Value boxes ─────────────────────────── */
   .s-value-boxes { display: flex; flex-direction: column; gap: 16px; }
   .value-box {
-    display: grid; grid-template-columns: 160px 1fr; align-items: stretch; gap: 0;
-    background: #fff; border: 1px solid var(--rr-border);
+    display: grid; grid-template-columns: 190px 1fr; align-items: stretch; gap: 0;
+    background: #fff; border: 3px solid var(--rr-border);
     border-radius: 20px; padding: 0; overflow: hidden; box-shadow: var(--rr-shadow);
   }
+  /* Number cell typography is intentionally small: the box's height
+     should always be driven by the white body copy on the right, not
+     by the number/caption on the left. If a future number or caption
+     runs long, shrink further here rather than letting the box grow
+     to fit it.
+     Number color is --rr-alert-red, a DELIBERATE EXCEPTION to the
+     brand palette, not an oversight. This section is the negative/
+     current-state half of the page (see the framing rule above), and
+     needs to read as "problem" instantly, more urgently than the
+     brand's own orange accent does. Earlier version of this rule used
+     --rr-orange (still used for "The Cost" text elsewhere on the
+     page) reasoning that green reads as success and works against
+     this section; that's still true, but red reads as alarm faster
+     and more universally than orange does, which is worth more here
+     than palette purity.
+     A shape-based treatment (top accent stripe + alert-triangle icon)
+     was tried and reverted per direct feedback, not because the
+     reasoning was wrong but because it didn't land visually. The
+     white card border was thickened (1px to 2px, then to 3px) instead, as a
+     simpler, cleaner way to make each box read as more prominent.
+     Keep the red exception SCOPED to exactly this module (the number
+     and caption), do not let it bleed into any other part of the page
+     (cost callouts, labels, anything else) or it stops being a
+     deliberate accent and starts looking like an inconsistent
+     palette. If a future brand refresh adds an official alert color,
+     replace --rr-alert-red's value and drop this comment. */
   .value-number-cell {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 18px 16px; background: var(--rr-forest); color: #fff;
   }
   .value-number {
-    font-family: var(--rr-font-display); font-weight: 400;
-    font-size: 2rem; line-height: 1.05; letter-spacing: -0.02em;
-    color: var(--rr-rightrev-green); font-variant-numeric: tabular-nums;
+    font-family: var(--rr-font-display); font-weight: 700;
+    font-size: 2.375rem; line-height: 1.05; letter-spacing: -0.02em;
+    color: var(--rr-alert-red); font-variant-numeric: tabular-nums;
     text-align: center; font-feature-settings: "tnum" 1;
   }
   .value-number-caption {
-    font-family: var(--rr-font-body); font-weight: 500;
-    font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--rr-light-green); text-align: center; margin-top: 5px;
+    font-family: var(--rr-font-body); font-weight: 600;
+    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: rgba(255,255,255,0.72); text-align: center; margin-top: 6px;
   }
   .value-explain-cell { padding: 24px 30px; align-self: center; }
   .value-explain-title { font-size: 1rem; font-weight: 700; color: var(--rr-dark); margin-bottom: 5px; }
@@ -167,13 +194,30 @@
   /* ─── Two-column row ──────────────────────── */
   .s-two-col { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-items: stretch; }
 
-  /* ─── Pain / solve ────────────────────────── */
-  .pain-item { padding: 16px 0; border-top: 1px solid var(--rr-border); }
+  /* ─── Pain / solve (numbered path) ────────── */
+  .pain-item {
+    display: grid; grid-template-columns: 32px 1fr; column-gap: 14px;
+    padding: 16px 0; border-top: 1px solid var(--rr-border); position: relative;
+  }
   .pain-item:first-of-type { border-top: none; padding-top: 0; }
+  .pain-step-col { position: relative; display: flex; justify-content: center; }
+  .pain-step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--rr-forest); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--rr-font-display); font-weight: 700; font-size: 0.875rem;
+    position: relative; z-index: 1; flex-shrink: 0;
+  }
+  /* No connecting line between numbers on purpose: these are a
+     priority ranking (which issue costs the most), not sequential
+     build steps. A connecting line reads as a timeline/roadmap, which
+     would misrepresent this as an implementation order. */
+  .pain-signal-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .pain-icon { flex-shrink: 0; width: 18px; height: 18px; color: var(--rr-rightrev-green); }
   .pain-signal {
     font-family: var(--rr-font-display); font-weight: 700;
     font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.14em;
-    color: var(--rr-forest); margin-bottom: 6px;
+    color: var(--rr-forest); margin-bottom: 0;
   }
   .pain-why { font-size: 1rem; line-height: 1.6; color: var(--rr-gray); margin-bottom: 10px; }
   .pain-cost-label {
@@ -247,7 +291,9 @@
   /* ─── Audience rows ───────────────────────── */
   .audience-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 4px; }
   .audience-item { border-top: 1px solid var(--rr-border); padding-top: 16px; }
-  .audience-item-title { font-family: var(--rr-font-body); font-size: 1rem; font-weight: 700; color: var(--rr-forest); margin-bottom: 6px; }
+  .audience-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .check-icon { flex-shrink: 0; width: 18px; height: 18px; }
+  .audience-item-title { font-family: var(--rr-font-body); font-size: 1rem; font-weight: 700; color: var(--rr-forest); margin-bottom: 0; }
   .audience-item-text { font-size: 1rem; line-height: 1.55; color: var(--rr-gray); }
 
   /* ─── Footer ──────────────────────────────── */
@@ -280,11 +326,10 @@
   
   <div class="s-hero-row">
     <div class="s-title-hero">
-      <div class="title-eyebrow">HR Technology · Cloud-Based</div>
-      <h1 class="title-headline">Faster Monetization for <span class="acct-highlight">BambooHR</span></h1>
+      <div class="title-eyebrow">HR Software · Charleston, SC</div>
+      <h1 class="title-headline">Ship New Products Faster for <span class="acct-highlight">BambooHR</span></h1>
       <div class="ae-quote">
-        <div class="quote-text">BambooHR's bundled pricing model with add-on modules creates complex SSP allocations that slow down recognition. Finance needs a way to recognize revenue at the speed product ships Bamboo AI and Elite analytics features.</div>
-        <div class="quote-attribution">Dylan Kay <span>· Account Executive, RightRev</span></div>
+        <div class="quote-text">"Elite launched in 4 months, but recognizing revenue from bundled tiers and add-on modules still takes manual allocation work every quarter. Getting that out of the close would let the product team ship even faster next time."</div>
       </div>
     </div>
 
@@ -313,32 +358,32 @@
   <div class="s-value-boxes">
     <div class="value-box">
       <div class="value-number-cell">
-        <div class="value-number">1</div>
-        <div class="value-number-caption">Day, not a quarter</div>
+        <div class="value-number">1 Quarter+</div>
+        <div class="value-number-caption">To ship new tier</div>
       </div>
       <div class="value-explain-cell">
-        <div class="value-explain-title">Ship new pricing models on launch day.</div>
-        <div class="value-explain-text">Bamboo AI rolled out as an embedded system across the platform in July, and the Elite analytics tier launched at full scale within months. Recognizing revenue for these AI and analytics bundles typically takes a quarter of engineering and finance work. RightRev models complex new offerings in a day, letting BambooHR recognize revenue the moment features go live.</div>
+        <div class="value-explain-title">New product tiers sit longer than they should.</div>
+        <div class="value-explain-text">Elite launched in 4 months because the product team moved fast. But modeling its revenue structure, bundled pricing with Core/Pro, and allocation across Payroll and Benefits add-ons traditionally takes finance a quarter or more to validate and document. That gap compounds if BambooHR ships Bamboo AI modules the same way.</div>
       </div>
     </div>
     <div class="value-box">
       <div class="value-number-cell">
         <div class="value-number">3</div>
-        <div class="value-number-caption">Bundling complexities automated</div>
+        <div class="value-number-caption">Critical complexities unmanaged</div>
       </div>
       <div class="value-explain-cell">
-        <div class="value-explain-title">Automate all three allocation challenges in one platform.</div>
-        <div class="value-explain-text">BambooHR manages SSP allocation across bundles (core plan plus payroll and benefits add-ons), handles pricing with bundle discounts, and processes standalone implementation revenue for Elite features. These three distinct challenges live in the same contracts today. RightRev consolidates all three in a single system of record.</div>
+        <div class="value-explain-title">Three revenue mechanics are running manually today.</div>
+        <div class="value-explain-text">SSP allocation across bundled plans, bundling discounts on Core/Pro tiers with add-ons, and event-based implementation revenue for Elite features are all handled without a system. Each one adds work to the quarterly close, see how each one ranks below.</div>
       </div>
     </div>
     <div class="value-box">
       <div class="value-number-cell">
-        <div class="value-number">8 to 12+</div>
+        <div class="value-number">8-12+</div>
         <div class="value-number-caption">Days added to close</div>
       </div>
       <div class="value-explain-cell">
-        <div class="value-explain-title">Protect close timelines against bundling complexity.</div>
-        <div class="value-explain-text">Bundled subscription models with implementation services and module add-ons typically extend month-end close by 8 to 12 or more days under manual allocation and journal entry processes. As BambooHR ships more features bundled into tiers, this drag multiplies across more contracts. RightRev removes this dependency, letting your team close predictably.</div>
+        <div class="value-explain-title">Manual allocation and bundling work extends the close cycle.</div>
+        <div class="value-explain-text">Recurring subscription revenue from Core/Pro tiers is straightforward. But recognizing revenue from bundle discounts, SSP allocation to individual components, and implementation-triggered revenue for Elite features demands manual spreadsheet work, contract review, and multi-system reconciliation. Organizations managing this level of complexity typically add 8 to 12 or more days to close.</div>
       </div>
     </div>
   </div>
@@ -346,44 +391,54 @@
   
   <div class="s-two-col">
     <div class="s-pain-solve">
-      <div class="section-title">Pain RightRev Can Solve</div>
+      <div class="section-title">What Matters Most</div>
+      <div class="pain-solve-intro">Of everything at stake above, here's what matters most, ranked by where the cost is highest today.</div>
 
       <div class="pain-item">
-        <div class="pain-signal">SSP ALLOCATION</div>
-        <div class="pain-why">BambooHR packages a core HR plan with distinct add-ons like Payroll and Benefits Administration, explicitly marketing a bundle discount when purchased together. Determining the standalone selling price of each component inside the bundle requires manual analysis today.</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">Manual SSP reviews delay contract closeout and slow down deal approvals in Salesforce CPQ.</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">RightRev automates SSP derivation and allocation in Salesforce CPQ, recognizing bundle revenue the moment the contract is signed.</div>
+        <div class="pain-step-col"><div class="pain-step-num">1</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row"><svg class="pain-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="9" width="10" height="6" rx="1" fill="currentColor"/><rect x="13" y="9" width="9" height="6" rx="1" fill="currentColor" opacity="0.45"/></svg><div class="pain-signal">SSP ALLOCATION</div></div>
+          <div class="pain-why">BambooHR bundles its core HR plan with distinct add-on products like Payroll and Benefits Administration, with explicit bundle discounts applied at purchase. These need standalone pricing (SSP) for each component to recognize revenue correctly, but that allocation currently happens in spreadsheets each quarter.</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">Revenue close takes longer and audit scrutiny on bundle pricing increases.</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">RightRev's Architect product automates SSP analysis and allocation for bundled agreements, so every bundle recognizes revenue to its components on day one of the close.</div>
+          </div>
         </div>
       </div>
 
       <div class="pain-item">
-        <div class="pain-signal">BUNDLING</div>
-        <div class="pain-why">The pricing page shows Core/Pro/Elite plans combined with optional modules like Time & Attendance and Global Employment. Each plan tier has different features and implementation requirements, requiring separate allocation logic within single contracts.</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">Finance can't support a new bundled offering without a manual mapping and implementation blueprint first, delaying product launch windows.</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">Architect templates let you model any bundle combination in hours, not weeks, shipping pricing models at product velocity.</div>
+        <div class="pain-step-col"><div class="pain-step-num">2</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row"><svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><div class="pain-signal">BUNDLING</div></div>
+          <div class="pain-why">BambooHR's pricing page markets multi-component packaging: Core/Pro/Elite plans bundled with modules like Time and Attendance and Global Employment all under a single contract-sales quote. Each bundle combines products with independent value but a combined price, requiring split revenue recognition across components.</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">If revenue recognition can't support a new bundled tier fast enough, the plan ships late or in a simpler form than the market was offered.</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">RightRev handles bundled agreements end-to-end: CPQ integration, pricing rule configuration, and multi-component revenue split all in one system, so the Elite tier or any new bundle ships when the product is ready, not when finance finishes allocation.</div>
+          </div>
         </div>
       </div>
 
       <div class="pain-item">
-        <div class="pain-signal">EVENT-BASED RECOGNITION</div>
-        <div class="pain-why">BambooHR describes a separate implementation process for Elite features with implementation specialists and additional time required. Revenue recognition must split between the upfront implementation service and the ongoing software subscription at different performance obligation dates.</div>
-        <div class="pain-cost">
-          <div class="pain-cost-label">The Cost</div>
-          <div class="pain-cost-text">Manual event tracking across implementation and subscription revenue creates audit flags and restatement risk if events are missed or misreported.</div>
-        </div>
-        <div class="pain-fix">
-          <div class="pain-fix-label">How RightRev solves it</div>
-          <div class="pain-fix-text">RightRev tracks implementation completion and subscription milestones automatically, recognizing revenue the moment each obligation is satisfied.</div>
+        <div class="pain-step-col"><div class="pain-step-num">3</div></div>
+        <div class="pain-content">
+          <div class="pain-signal-row"><svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg><div class="pain-signal">EVENT-BASED RECOGNITION</div></div>
+          <div class="pain-why">BambooHR's Elite tier includes separate implementation with dedicated implementation specialists and variable implementation time. Revenue from Elite features is recognized on implementation completion, creating an event-driven recognition pattern tied to non-standard contract milestones rather than a simple go-live date.</div>
+          <div class="pain-cost">
+            <div class="pain-cost-label">The Cost</div>
+            <div class="pain-cost-text">Each Elite implementation triggers manual revenue recognition work and contract-to-close mapping, slowing down close activities and creating risk of misstatement.</div>
+          </div>
+          <div class="pain-fix">
+            <div class="pain-fix-label">How RightRev solves it</div>
+            <div class="pain-fix-text">RightRev's system recognizes revenue based on business events like implementation completion, automatically triggering correct revenue treatment for Elite contracts without manual intervention in the close process.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -394,21 +449,21 @@
       <div class="case-study-name">Epicor</div>
       <div class="case-study-section">
         <div class="case-study-label">BambooHR's Challenge:</div>
-        <div class="case-study-text">BambooHR's bundled Core, Pro, and Elite plans with optional add-ons require precise SSP allocation and revenue recognition across complex multi-module pricing. Implementation services for Elite features add another layer of event-based recognition complexity on top of recurring subscription revenue.</div>
+        <div class="case-study-text">BambooHR bundles multiple components like Payroll and Benefits with its core HR plan under single contracts, applies bundle discounts, and implements new product tiers like Elite across multiple customer accounts. All three require SSP allocation, bundling mechanics, and event-based revenue recognition to be handled correctly every quarter without slowing the close or blocking new product launches.</div>
       </div>
       <div class="case-study-section">
         <div class="case-study-label">How We Helped Epicor Do the Same:</div>
-        <div class="case-study-text">Epicor faced similar challenges managing bundled offerings, SKU de-bundling, and contract modifications across thousands of agreements. RightRev consolidated fragmented legacy systems into a single source of truth, automating SSP analysis, allocation, and event-based recognition across complex bundles.</div>
+        <div class="case-study-text">Epicor processes tens of thousands of contracts each month with similarly complex bundling and SSP allocation needs. RightRev provided a single system for SSP analysis, allocation, SKU de-bundling, and contract modifications, replacing fragmented legacy systems and manual Excel work so the revenue close moved faster and finance had one source of truth.</div>
       </div>
       <div class="case-study-quote">
-        <div class="case-study-quote-text">By leveraging RightRev, Epicor achieved greater transparency, accuracy, and speed in its revenue recognition processes.</div>
+        <div class="case-study-quote-text">Epicor processes tens of thousands of contracts and hundreds of thousands of journal lines every month.</div>
         <div class="case-study-quote-attribution">From the Epicor case study</div>
       </div>
       <a class="case-study-btn" href="https://www.rightrev.com/customer-stories/customer-stories-epicor/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content=BambooHR" target="_blank">Read the Epicor case study</a>
       <div class="case-study-followup">
         <div class="section-title">Revenue Complexity Assessment</div>
         <div class="case-study-followup-title">Want to see for yourself?</div>
-        <div class="case-study-followup-text">BambooHR's pricing model already shows bundling, SSP allocation, and implementation service complexity across three active signals. Take our assessment to quantify what these recognition challenges cost in close time and audit risk.</div>
+        <div class="case-study-followup-text">BambooHR's bundled plans and add-on modules already create SSP allocation, bundling, and event-based recognition complexity. Take our assessment to see what this complexity costs in close time and audit risk today.</div>
         <a class="case-study-followup-btn" href="https://calculator.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content=BambooHR" target="_blank">Take the Assessment</a>
       </div>
     </div>
@@ -419,16 +474,16 @@
     <div class="section-title">How RightRev Helps Finance Teams Drive Growth</div>
     <div class="audience-items">
       <div class="audience-item">
-        <div class="audience-item-title">Ship Bamboo AI at Launch Velocity</div>
-        <div class="audience-item-text">BambooHR announced Bamboo AI as an embedded system across the platform, signaling aggressive velocity in feature rollout. Your CFO needs finance to recognize revenue for these new AI bundles in parallel with product launch, not months after. RightRev lets you model the new bundle's revenue impact in a day, so recognition never lags product momentum.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Launch any revenue model faster</div></div>
+        <div class="audience-item-text">BambooHR's finance team has already proven bundling works: Elite launched in 4 months and shipped with 30,000 customers on day one. The bottleneck now is the quarter of revenue-modeling work that comes after. RightRev shrinks that to days, so Bamboo AI modules and future product tiers can ship as fast as the engineering roadmap allows, not wait for finance to finish revenue allocation.</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">Defend Bundle Allocations in Audit</div>
-        <div class="audience-item-text">Auditors scrutinize bundled offerings and stand-alone selling prices at full population, not just a sample. With three allocation signals firing (SSP, bundling, and implementation services), every contract is now a point of audit scrutiny. RightRev creates defensible allocation logic in the system itself, so every journal entry carries its own documented rationale.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Build audit confidence</div></div>
+        <div class="audience-item-text">Bundling and SSP allocation are both SEC-scrutinized topics in revenue audits. As BambooHR's customer base grows and bundles multiply, auditors will ask tougher questions about how pricing is allocated. With every allocation visible, documented, and auditable in one system, the finance team walks into every audit prepared, not scrambling to explain manual spreadsheet calculations.</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">Walk Into Diligence With System of Record</div>
-        <div class="audience-item-text">Fast-growing SaaS companies like BambooHR attract M&A interest. When buyers or secondary investors evaluate a transaction, they read revenue recognition as a material weakness trigger. Having a single system of record for bundled revenue recognition, instead of separate models and manual allocations, removes that diligence risk and protects your valuation.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Create a defensible system of record</div></div>
+        <div class="audience-item-text">Fast-growing software companies invite diligence from investors, acquirers, and strategic buyers more often than slower peers. BambooHR's AI and Elite product success puts the company on acquisition radars. Revenue recognition is one of the first things acquirers audit at diligence: having a documented, automated system showing exactly how every dollar was recognized is far stronger than a folder of quarterly allocations.</div>
       </div>
     </div>
   </div>
@@ -438,16 +493,16 @@
     <div class="section-title">How RightRev Helps Accounting Teams Keep Up</div>
     <div class="audience-items">
       <div class="audience-item">
-        <div class="audience-item-title">Your Current System Works Well</div>
-        <div class="audience-item-text">Your team built a process that handles core HR plans plus add-on modules, and it delivers accurate numbers every month. That's a real accomplishment. The issue is not that the system is broken, it's that every new bundled feature (Bamboo AI, Elite analytics) adds another exception to manage.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">The team's system works for today.</div></div>
+        <div class="audience-item-text">BambooHR's accounting team built a close process that handles recurring subscription revenue correctly and has managed bundling and allocation work each quarter without material errors. That is real craft and a genuine accomplishment, not something to apologize for or replace.</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">New Features Are Creating Strain</div>
-        <div class="audience-item-text">Bamboo AI bundles across your platform, and Elite analytics requires separate implementation event tracking. Each new product tier introduces a new allocation template, a new set of conditions to check, and a new set of manual steps before the spreadsheet is ready for close. The handoff between product, legal, and finance is getting slower, not faster.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">The seams are beginning to show.</div></div>
+        <div class="audience-item-text">Elite launched with a new bundling structure and implementation process. Bamboo AI will add more modules and event-driven features. Each new product tier adds one more variation to the allocation template the team maintains, one more contract type to watch, one more reason the close takes longer. A quarter ago this felt manageable; today it is starting to strain.</div>
       </div>
       <div class="audience-item">
-        <div class="audience-item-title">RightRev Restores Your Authority</div>
-        <div class="audience-item-text">Rather than replacing your team's work, RightRev moves your expertise from assembly (building the allocation sheet, checking every line) to oversight. Your team designs the logic once in Architect, RightRev enforces it on every contract, and you monitor for exceptions instead of creating every entry by hand.</div>
+        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">RightRev restores the team's authority.</div></div>
+        <div class="audience-item-text">RightRev handles SSP allocation, bundling, and event-based recognition automatically, so the close gets shorter and the team's expertise moves from manual spreadsheets to providing analysis and strategic decision-making.</div>
       </div>
     </div>
   </div>
