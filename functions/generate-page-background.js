@@ -38,7 +38,8 @@ exports.handler = async (event) => {
   const accountData = JSON.stringify(data, null, 2);
 
   const accountName = data['AccountName'] || data['Account Name'] || 'account';
- const slug = accountName.toLowerCase().replace(/[^a-z0-9]+/g, '');  console.log('Account name:', accountName, '| Slug:', slug);
+  const slug = accountName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  console.log('Account name:', accountName, '| Slug:', slug);
 
   console.log('Starting Claude call. Data keys:', Object.keys(data));
 
@@ -73,10 +74,10 @@ TITLE VALUE DRIVER:
 - Must be a 2-5 word phrase a CFO would stop on. Not generic like "Better Revenue Recognition."
 - Source it from the SHORT TAGS (AI Product, Rapid Growth, New Product, etc.) which represent active business challenges the org is navigating right now. Do NOT source from the rev rec complexity signals (SSP Allocation, Bundling, etc.) — those are the mechanism, not the driver.
 
-VALUE BOXES — this is an analysis task, not three fixed slots:
-- There is no fixed Box 1 / Box 2 / Box 3 type. Read everything available (Clay's data plus all five source docs), build a candidate list of plausible stakes (monetization/speed-to-ship, operational complexity, audit/compliance exposure, valuation/diligence exposure, manual-effort/close-cycle drag), then rank each candidate by how strongly evidenced it is for THIS account and how severe it is, and pick the top three.
-- Reject weakly-evidenced candidates even if dramatic (never assign a valuation/M&A stake to an account with no M&A/funding signal). Don't pick two candidates that are really the same stake restated.
-- For each of the three chosen, prefer a real account-specific number pulled from Clay's own reasoning text (a growth rate, a reach number, a launch timeframe) over a generic industry stat; only fall back to a generic stat (from Position deck, Value_Pillars, or the ROI Library) when nothing account-specific exists for that stake. See the full instructions below for the complete step-by-step process and worked examples.
+VALUE BOXES — how to choose the three numbers:
+- Box 1: A RightRev CAPABILITY stat matched to the account's SHORT TAGS. Pull from RightRev's own proof points (e.g. "a quarter to a day" for modeling a new revenue arrangement). Pick whichever capability stat most directly answers the short-tag challenge.
+- Box 2: An account-SPECIFIC count (number of products, contracts, employees, revenue scale) that makes the complexity concrete for this account. Source from Clay data.
+- Box 3: A RISK or PROOF stat — either a downside risk this account faces or a proof point from an anonymized RightRev customer ("one RightRev customer" — never presented as a guaranteed outcome). All three boxes should build one coherent narrative, not three random stats.
 
 PAIN SIGNALS:
 - Number 1/2/3 by severity — 1 = costing the account the most today.
@@ -112,9 +113,9 @@ FIELD MAPPING FROM CLAY DATA:
 - {{REP_EMAIL}} — "AccountOwnerEmail" field  
 - {{REP_MEETING_LINK}} — "OwnerMeetingLink" field
 - {{REP_LINKEDIN}} — "AccountOwnerLinkedIn" field
-- {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — first-ranked stake (see VALUE BOXES analysis process, not a fixed type)
-- {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — second-ranked stake (see VALUE BOXES analysis process, not a fixed type)
-- {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — third-ranked stake (see VALUE BOXES analysis process, not a fixed type)
+- {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — capability stat box
+- {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — account-specific count box
+- {{VALUE_BOX_3_NUMBER}}, {{VALUE_BOX_3_CAPTION}}, {{VALUE_BOX_3_TITLE}}, {{VALUE_BOX_3_TEXT}} — risk/proof stat box
 - {{PAIN_1_SIGNAL}}, {{PAIN_1_WHY}}, {{PAIN_1_COST}}, {{PAIN_1_FIX}}, {{PAIN_1_ICON}} — top signal from "RevRecComplexityResponse" field (this is a JSON string — parse it to get "Top signals"). PAIN_SIGNAL is the signal name in ALL CAPS. PAIN_WHY is why this matters for this account. PAIN_COST is what it costs them. PAIN_FIX is how RightRev solves it. PAIN_ICON is one of the pre-approved inline SVG icons in the detailed instructions below, matched to the signal's mechanic.
 - {{PAIN_2_SIGNAL}}, {{PAIN_2_WHY}}, {{PAIN_2_COST}}, {{PAIN_2_FIX}}, {{PAIN_2_ICON}} — second signal, same approach
 - {{PAIN_3_SIGNAL}}, {{PAIN_3_WHY}}, {{PAIN_3_COST}}, {{PAIN_3_FIX}}, {{PAIN_3_ICON}} — third signal, same approach
@@ -128,7 +129,6 @@ FIELD MAPPING FROM CLAY DATA:
 - {{ACCOUNTING_RESOLUTION_TITLE}}, {{ACCOUNTING_RESOLUTION_TEXT}} — controller resolution
 
 DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly when writing each section's copy — pillar mapping, sourcing rules, tone rules, and worked examples are all below. These are guidance for you only: do NOT reproduce any of this section, or these headers, in your output. Your output starts fresh at the TEMPLATE section further down.):
-
 <!--
   ================================================================
   MANDATORY — RUN BEFORE FINALIZING ANY NEW VERSION OF THIS ASSET
@@ -210,20 +210,12 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
           whether that identity is already established elsewhere on
           the page. If so, don't repeat it.
 
-       b. USE ICONS TO AID SCANNING ON ANY MULTI-POINT LIST, but pick
-          the RIGHT KIND of icon for what the list represents:
-            - A list of DISTINCT CATEGORIES (different mechanics,
-              different topics) gets a small icon PER CATEGORY that
-              differentiates them at a glance (see the Pain RightRev
-              Can Solve icon library below).
-            - A list of ACHIEVED OUTCOMES or CAPABILITIES (the same
-              kind of thing repeated three times, just different
-              instances) gets the SAME checkmark icon on every item,
-              since the point is "here are three wins," not "here are
-              three different topics." Both audience rows use this.
-          If a new list gets added to this document later, decide
-          which of these two shapes it is before picking an icon
-          pattern, don't default to checkmarks everywhere out of habit.
+       b. USE ICONS ONLY WHERE THE TEMPLATE ACTUALLY HAS A SLOT FOR
+          THEM. Right now that's just the What Matters Most list: each
+          item gets a small icon per signal type, matched to the
+          mechanic (see the icon library in that section below), not
+          decorative or random. The two audience rows (Finance,
+          Accounting) have no icon slot in this design, do not add one.
 
        c. CONTAINER SIZE FOLLOWS CONTENT, NOT THE OTHER WAY AROUND.
           When a display number wraps awkwardly or a caption feels
@@ -397,121 +389,69 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     ================================================================
     Three boxes. Each box: a number (left) + an explanation of what
     that number means for THIS account (right). Together the three
-    should build the case for the three biggest things genuinely at
-    stake for THIS account — not three stats poured into three fixed
-    slots, three things Claude Code has actually decided matter most
-    after reading everything available.
+    should build the case for the single biggest value RightRev
+    provides this account — not three random stats, a chosen trio
+    that supports one narrative.
 
-    THIS IS AN ANALYSIS TASK, NOT A FILL-IN-THE-TEMPLATE TASK. An
-    earlier version of this section assigned each box a fixed TYPE
-    (Box 1 always a capability stat, Box 2 always a signal count, Box
-    3 always a risk stat) and only let the account's data influence
-    which specific number filled that fixed slot. That was still a
-    formula wearing the appearance of analysis. Do not do that. There
-    is no fixed Box 1 / Box 2 / Box 3 assignment. All three boxes draw
-    from the same pool of candidates below, and which three actually
-    make the page is a judgment call made fresh for each account.
+    HOW TO CHOOSE THE THREE NUMBERS:
 
-    STEP 0, MANDATORY, BEFORE ANYTHING ELSE: read through the
-    account's own short-tag reasoning AND detailed-signal reasoning
-    text (the actual sentences Clay wrote about this account) and pull
-    out every concrete, quantifiable fact already stated about THIS
-    account: a growth percentage, a dollar or revenue figure, a count
-    of products/tools/tiers, a number of people or customers reached, a
-    timeframe a launch took, anything with a real number attached to a
-    real fact about them. This is the raw material an account-specific
-    stake gets built from, prefer these over a generic industry stat
-    wherever a real one exists for the stake in question.
+      Box 1 — RightRev CAPABILITY stat, matched to the account's
+      SHORT TAGS (same signal system used for the title). Pull from
+      RightRev's own proof points in Position_direction_pptx / the
+      Architect capability set (e.g. "a quarter → a day" for modeling
+      a new revenue arrangement). Pick whichever capability stat most
+      directly answers the short-tag challenge (e.g. "AI Product" /
+      new pricing launches → the speed-to-recognize stat). When
+      naming a RightRev product (Architect, Assistant, Agents), always
+      say "RightRev's [Name] product" on first mention in a section,
+      not just "[Name]" alone, since "the Architect" or "Architect
+      turns X into Y" reads ambiguously as a job title or a person
+      rather than a product.
 
-    STEP 1: READ EVERYTHING, NOT JUST CLAY'S ROW. Before ranking
-    anything, actually draw on all of it:
-      - 001_CFO_RightRev_Position_Arc_1 ("The Missing Layer," CFO):
-        monetization, audit, and valuation as the three simultaneous
-        pressures on a CFO
-      - 002_CONTROLLER_The_Missing_Layer (Controller): the practitioner
-        team's own strain, the pangs of a system starting to crack
-      - Position_direction_pptx: RightRev's own capability proof
-        points (e.g. the Architect's "a quarter to a day" claim)
-      - Value_Pillars__Detailed_Perspectives: the four value pillars
-        (remove bottleneck, replace manual work, preserve audit-grade
-        posture, accelerate new monetization) and their specific risk/
-        proof stats
-      - RightRev_ROI_Message_Library: efficiency gains, control
-        improvements, the anonymized customer proof point, the common
-        pain pattern, the day-one/ongoing ROI horizon
-      - Clay's own data for this account: short tags, detailed
-        signals, account profile (public/private, growth stage, etc)
+      Box 2 — ACCOUNT-SPECIFIC number, drawn directly from Clay's data
+      about this account (not the generic value pillar docs). Default
+      to a count of DETAILED SIGNALS, specifically the number of
+      entries in "Top signals" (the ones with actual sourced reasoning
+      behind them), not the raw "Signals fired" count if that list is
+      longer, since an unelaborated signal name isn't something this
+      page can substantiate. If no clean count applies, use another
+      concrete fact particular to them (a reported growth/revenue
+      figure from the news/signal sourcing, etc). Purpose: prove this
+      isn't a generic pitch, the page already knows something true
+      about them.
 
-    STEP 2: BUILD THE CANDIDATE LIST. Against everything in Step 1,
-    identify every stake that's PLAUSIBLE for this account, typically
-    drawn from categories like:
-      - Monetization / speed-to-ship: can they ship the pricing model
-        or tier they want to, fast enough? (sourced from Position
-        deck capability stats, OR an account-specific growth/reach/
-        launch-cadence number from Step 0)
-      - Operational complexity / manual load: how many distinct
-        rev-rec mechanics are already live and handled by hand today?
-        (count of the account's own "Top signals" entries)
-      - Audit / compliance exposure: how exposed are they to SEC
-        scrutiny or material weakness? (Value_Pillars Pillar 3 stats,
-        strongest when the account is public/SEC-reporting)
-      - Valuation / diligence exposure: does an M&A, funding, or IPO
-        event put revenue recognition in front of a buyer or investor?
-        (Value_Pillars Pillar 3 M&A/IPO stats, only when that signal
-        actually exists for the account, do not invent one)
-      - Manual-effort / close-cycle drag: what is the actual time or
-        headcount cost of doing this by hand today? (Value_Pillars
-        Pillar 2 and ROI Message Library stats, close-cycle length,
-        hours per year, the anonymized customer proof point)
-    This list is illustrative, not exhaustive, if something else in
-    the docs is genuinely a bigger stake for this account, use it.
+      CONNECTION TO "WHAT MATTERS MOST" BELOW: this count is not a
+      coincidence, it's normally the same count as the number of
+      numbered items in the "What Matters Most" section further down
+      the page (both draw from the same "Top signals" entries). Make
+      that connection explicit in Box 2's body text with a closing
+      clause pointing down the page, e.g. "...see how each one ranks
+      below." Do NOT use sequence language here ("see the order we'd
+      tackle all three in") — that section is a priority ranking, not
+      a rollout plan. Don't add this pointer in Box 1 or Box 3, only
+      Box 2, since it's the one that's actually counting the same
+      items, not a different stat.
 
-    STEP 3: RANK BY EVIDENCE AND SEVERITY, PICK THE TOP THREE. For
-    each candidate, ask two questions: (a) is there real evidence for
-    this in the account's own data (a fired signal, a quoted number,
-    an account profile fact), not just a theoretical possibility any
-    account could have, and (b) how severe or urgent is it relative to
-    the other candidates. Rank on both, take the top three, and reject
-    weakly-evidenced candidates even if they'd be dramatic; a stronger
-    stat with real evidence beats a punchier one invented for an
-    account profile that doesn't actually support it (do not assign a
-    valuation/M&A stake to an account with no M&A/funding signal, for
-    instance, even though it's a compelling category in the abstract).
-    Avoid picking two candidates that are really the same stake
-    restated (e.g. audit exposure and material-weakness risk overlap
-    heavily, don't use both).
-
-    STEP 4: BUILD EACH CHOSEN STAKE INTO A BOX. For each of the three
-    selected, apply Step 0 first, an account-specific number beats a
-    generic one whenever a real one exists for that particular stake.
-    When no account-specific number is available for a chosen stake,
-    pull the best-fitting stat from whichever source doc actually
-    supports it (Value_Pillars for risk stats, Position deck for
-    capability stats, ROI Message Library for efficiency/effort stats).
-    Never force an account-specific number that doesn't genuinely fit
-    just to avoid a generic stat, a legitimate generic stat, correctly
-    sourced, beats a stretched or invented account-specific one.
-    When naming a RightRev product (Architect, Assistant, Agents),
-    always say "RightRev's [Name] product" on first mention in a
-    section, not just "[Name]" alone, since "the Architect" or
-    "Architect turns X into Y" reads ambiguously as a job title or a
-    person rather than a product.
-
-    IF THE COMPLEXITY-COUNT STAKE (operational complexity / manual
-    load) IS ONE OF THE THREE CHOSEN: its count is normally the same
-    as the number of numbered items in the "What Matters Most" section
-    further down the page (both draw from the same "Top signals"
-    entries). Make that connection explicit in that box's body text
-    with a closing clause pointing down the page, e.g. "...see how
-    each one ranks below." Do NOT use sequence language here ("see the
-    order we'd tackle all three in") — that section is a priority
-    ranking, not a rollout plan. If this stake wasn't one of the three
-    chosen for this account, there's nothing to connect, don't force
-    the pointer into whichever box happens to have a number in it.
-
-    These are sourced claims from the value pillar docs, not RightRev's
-    own numbers — Claude Code should still know where each one came
-    from internally, but the citation is NOT shown on the page.
+      Box 3 — RISK/PROOF stat from Value_Pillars__Detailed_Perspectives,
+      chosen by account profile:
+        - Public company / SEC-reporting  → SEC comment-letter or
+          material-weakness stat (Pillar 3)
+        - Active M&A, PE-owned, late-stage → M&A purchase-price-
+          reduction stat (Pillar 3)
+        - Pre-IPO                          → IPO material-weakness stat
+          (Pillar 3)
+        - Manual/headcount-strain signals, OR no public/M&A/IPO signal
+          exists at all → close-cycle-length stat (Pillar 2). This is
+          the default fallback: most accounts will not have a clean
+          Pillar 3 trigger, and reaching for one anyway (implying an
+          IPO or acquisition that was never actually signaled) is a
+          bigger credibility risk than falling back to the close-cycle
+          stat, which applies to any account with real manual
+          complexity regardless of ownership structure or governance
+          status.
+      These are sourced claims from the value pillar docs, not RightRev's
+      own numbers — Claude Code should still know where each one came
+      from internally, but the citation is NOT shown on the page.
 
     HEADING ABOVE THE BOXES: a static section heading sits above this
     row (see markup below), not a merge field. Keep it as-is across
@@ -737,35 +677,9 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
 
     Lists the top three DETAILED SIGNALS for the account (the "Signals
     fired" / "Top signals" JSON, same source used for the AE quote
-    above, not the short tags used for the title).
-
-    DO NOT MECHANICALLY ACCEPT CLAY'S LISTED ORDER AS THE RANKING.
-    Clay's order is a data point, not a verdict, the same discipline
-    used in "What's At Stake" above applies here: analyze, don't
-    default. For each signal Clay fired with real supporting reasoning,
-    work out its actual cost (using the cost-mapping rules below), then
-    rank the three using this heuristic, in priority order:
-      1. Whichever signal's cost most directly reinforces the #1
-         stake already chosen in "What's At Stake" above gets rank 1.
-         The two sections should read as one connected argument, not
-         two independently-generated lists that happen to share a
-         topic, if the biggest stake above was a monetization/speed
-         problem, the signal whose cost is a delayed or watered-down
-         launch is the natural rank 1 here, not whichever signal Clay
-         happened to list first.
-      2. Rank the remaining two by severity of consequence, using
-         Value_Pillars' own framing of which risks are worse: audit
-         and restatement risk outranks a delayed launch, which
-         outranks a delayed close. This reflects the source doc's own
-         emphasis, audit/restatement issues carry outsized, sometimes
-         one-time-severe consequences (material weakness disclosure,
-         stock price drops, SEC scrutiny), where close-cycle drag,
-         while a real and recurring cost, is comparatively contained.
-      3. If Clay's original order already matches what steps 1 and 2
-         produce, keep it, that's a legitimate outcome, not a sign the
-         check was skipped. If analysis produces a different order,
-         use the analyzed order, and be able to explain why each item
-         outranks the one below it.
+    above, not the short tags used for the title). Use Clay's listed
+    order as the priority ranking (first-listed signal is the
+    account's highest-cost issue, gets rank "1").
 
     For each of the three:
       1. Signal name (short label, matches the Clay signal name)
@@ -811,27 +725,31 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
          the mechanic just described, not a generic capability claim.
       5. ICON: each item gets a small icon next to its signal name
          ({{PAIN_1_ICON}}, {{PAIN_2_ICON}}, {{PAIN_3_ICON}}), matched
-         to the signal type, not decorative or random. Use this exact
-         icon library, insert the matching SVG snippet verbatim (all
-         use class="pain-icon", already styled to size and color):
+         to the signal type, not decorative or random. This template
+         uses inline styles throughout (no CSS classes), so insert the
+         matching SVG snippet verbatim exactly as given below —
+         each one already carries the correct inline
+         style="flex-shrink:0;width:18px;height:18px;color:#69C04B"
+         so it matches the template's color and sizing without needing
+         a class:
 
          SSP Allocation:
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="9" width="10" height="6" rx="1" fill="currentColor"/><rect x="13" y="9" width="9" height="6" rx="1" fill="currentColor" opacity="0.45"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="9" width="10" height="6" rx="1" fill="currentColor"/><rect x="13" y="9" width="9" height="6" rx="1" fill="currentColor" opacity="0.45"/></svg>
 
          Bundling:
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
 
          Event-Based Recognition:
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg>
 
          Contract Modifications:
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
 
          Usage and Consumption:
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 19a7 7 0 1 1 14 0"/><path d="M12 19l3-5"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 19a7 7 0 1 1 14 0"/><path d="M12 19l3-5"/></svg>
 
          Any other/unlisted signal type (fallback):
-         <svg class="pain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+         <svg style="flex-shrink:0;width:18px;height:18px;color:#69C04B" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
 
          If a new signal type shows up that isn't in this library yet,
          use the fallback rather than inventing a new icon on the fly;
@@ -841,35 +759,12 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     vary phrasing naturally. No em dashes or double hyphens (see the
     mandatory instruction block at the top of this file).
 
-    WORKED EXAMPLE (Axon), re-ranking in action: Clay's listed order
-    was SSP Allocation, Contract Modifications, Bundling. Applying the
-    heuristic: Axon's #1 stake in "What's At Stake" above was
-    monetization/speed (the 34% YoY growth stake), so Bundling (cost:
-    delayed/watered-down launch) is the strongest candidate for rank 1
-    on narrative grounds, it's the signal that most directly threatens
-    that same stake. Contract Modifications (cost: audit and
-    restatement risk) outranks SSP Allocation (cost: delayed close) on
-    severity grounds per the heuristic above. Reasoning both ways
-    together: Bundling's launch-delay cost is severe on its own AND
-    reinforces the account's top identified stake, so it takes rank 1;
-    Contract Modifications' audit risk is the next most severe
-    consequence, rank 2; SSP Allocation's close delay, while real, is
-    the most contained of the three, rank 3. Final order used on the
-    page: Bundling, Contract Modifications, SSP Allocation, not Clay's
-    original SSP Allocation, Contract Modifications, Bundling.
-
-    WORKED EXAMPLE (BambooHR), same heuristic: Clay's listed order was
-    SSP Allocation, Bundling, Event-Based Recognition. BambooHR's #1
-    stake above was also monetization/speed (the 100,000+ reach
-    stake), so Bundling again takes rank 1 on narrative grounds, its
-    delayed-launch cost is the signal most directly tied to that stake.
-    Between the remaining two, Event-Based Recognition's audit and
-    restatement risk outranks SSP Allocation's delayed-close cost on
-    severity grounds, even though BambooHR is privately held and
-    doesn't have the public-company SEC amplifier Axon's version of
-    this cost carries, audit and restatement risk is still the more
-    severe consequence in general. Final order: Bundling, Event-Based
-    Recognition, SSP Allocation, not Clay's original order.
+    WORKED EXAMPLE (Axon): top three detailed signals were SSP
+    Allocation, Contract Modifications, and Bundling, in that order.
+    Costs assigned for variety: SSP Allocation -> delayed close,
+    Contract Modifications -> audit and restatement risk, Bundling ->
+    delayed product launch (since Axon's bundles ARE its new AI
+    product plans shipping to market). Built out below.
     ================================================================
   -->
 
@@ -1011,8 +906,7 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
       1. "Launch any revenue model faster" (monetization)
       2. "Build audit confidence" (audit)
       3. "Create a defensible system of record" (valuation)
-    Each gets a checkmark icon next to it (see markup below, class
-    "check-icon", same SVG every time). Only the body text under each
+    Only the body text under each
     headline is written per account, grounded in THIS account's actual
     use cases (short tags and detailed signals already established
     above), not generic industry language. Vary sentence structure
@@ -1058,9 +952,7 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     row as replacing the team or implying their current process is
     inadequate; the doc is explicit that this should honor the work
     already done and name the rupture without blaming them. Vary
-    sentence structure across the three items. Each headline gets a
-    checkmark icon next to it (see markup below, class "check-icon",
-    same SVG every time, matching Row 1). No em dashes or double
+    sentence structure across the three items. No em dashes or double
     hyphens (see the mandatory instruction block at the top of this
     file).
 
@@ -1084,7 +976,6 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
     decision-making."
     ================================================================
   -->
-
 END OF DETAILED PER-SECTION INSTRUCTIONS. Everything above this line is guidance only and must not appear in your output.
 
 No em dashes. No double hyphens. Vary sentence structure across every section.
@@ -1092,505 +983,223 @@ No em dashes. No double hyphens. Vary sentence structure across every section.
 TEMPLATE (fill in the placeholders below and return this structure, and only this structure, as your output — no instructional headers, no comments):
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ACCOUNT_NAME}} · RightRev</title>
 <style>
-  :root {
-    --rr-rightrev-green: #69C04B;
-    --rr-green: #078732;
-    --rr-forest: #164234;
-    --rr-dark: #081F17;
-    --rr-light-green: #F1FFEE;
-    --rr-soft-mint: #C2FFC9;
-    --rr-orange: #A65E17;
-    /* Intentional off-palette exception, see the comment above
-       .value-number-cell for why this exists and where it's used. */
-    --rr-alert-red: #E5342A;
-    --rr-gray: #3C4344;
-    --rr-border: rgba(8,31,23,0.12);
-    --rr-border-on-dark: rgba(255,255,255,0.22);
-    --rr-shadow: 0 4px 20px rgba(8,31,23,0.07);
-    --rr-font-display: "FK Display", "Host Grotesk", "Helvetica Neue", Arial, sans-serif;
-    --rr-font-body: "Scto Grotesk A", "Host Grotesk", -apple-system, "Helvetica Neue", Arial, sans-serif;
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 100%; }
   body {
-    font-family: var(--rr-font-body);
-    font-size: 1rem;
-    padding: 40px 24px 56px;
-    color: var(--rr-dark);
-    background: var(--rr-dark);
+    background: #E8E8E8;
+    color: #081F17;
+    font-family: "Scto Grotesk A", "Host Grotesk", -apple-system, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     line-height: 1.5;
   }
-  a { color: var(--rr-green); }
-  a:hover { color: var(--rr-forest); }
-  :focus-visible { outline: 2px solid var(--rr-green); outline-offset: 2px; border-radius: 3px; }
+  a { color: #078732; }
+  a:hover { color: #164234; }
+  :focus-visible { outline: 2px solid #078732; outline-offset: 2px; border-radius: 3px; }
+  a[class^="hv"] { transition: background 220ms cubic-bezier(0.22,0.61,0.36,1), color 220ms; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .hv1:hover { background:#078732;color:#fff; }
+  .hv2:hover { background:#fff; }
+  .hv3:hover { background:#fff;color:#164234; }
+  .hv4:hover { background:#69C04B;color:#081F17; }
 
-  .page { max-width: 940px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-
-  /* ─── Top bar ─────────────────────────────── */
-  .s-topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 4px; }
-  .rr-logo { display: block; height: 26px; width: auto; }
-  .rr-logo--foot { height: 22px; opacity: 0.92; }
-  .topbar-tag {
-    font-family: var(--rr-font-display);
-    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.28em;
-    color: var(--rr-forest);
-    border: 1px solid var(--rr-border);
-    border-radius: 999px; padding: 7px 14px 6px;
-    background: #fff;
-  }
-
-  /* ─── Hero row ────────────────────────────── */
-  .s-hero-row { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-items: stretch; }
-
-  .s-title-hero {
-    position: relative; overflow: hidden;
-    background: var(--rr-forest);
-    border-radius: 20px; padding: 34px 36px;
-    color: #fff;
-  }
-  .title-eyebrow {
-    position: relative; z-index: 1;
-    font-family: var(--rr-font-display);
-    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.28em;
-    color: var(--rr-rightrev-green); margin-bottom: 16px;
-  }
-  .title-headline {
-    position: relative; z-index: 1;
-    font-family: var(--rr-font-display); font-weight: 400;
-    font-size: 2.75rem; line-height: 0.9; letter-spacing: -0.03em;
-    color: #fff; text-wrap: balance;
-  }
-  .acct-highlight { color: var(--rr-rightrev-green); }
-
-  .ae-quote { position: relative; z-index: 1; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rr-border-on-dark); }
-  .quote-text { font-size: 1.0625rem; font-style: italic; line-height: 1.67; color: var(--rr-light-green); }
-
-  /* ─── Cards (shared light-card look) ──────── */
-  .s-account-team, .s-pain-solve, .s-audience-row {
-    background: #fff; border: 1px solid var(--rr-border);
-    border-radius: 20px; padding: 26px 28px; box-shadow: var(--rr-shadow);
-  }
-  .section-title {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 0.9375rem; text-transform: uppercase; letter-spacing: 0.2em;
-    color: var(--rr-forest); margin-bottom: 18px;
-  }
-  .pain-solve-intro { font-size: 0.9375rem; line-height: 1.5; color: var(--rr-gray); margin: -10px 0 18px; }
-
-  /* ─── Account team ────────────────────────── */
-  .s-account-team { display: flex; flex-direction: column; }
-  .team-role-tag {
-    font-family: var(--rr-font-display);
-    font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--rr-green); margin-bottom: 6px;
-  }
-  .ae-name { font-size: 1.0625rem; font-weight: 500; color: var(--rr-dark); }
-  .ae-email { font-size: 0.9375rem; color: var(--rr-green); margin-top: 2px; }
-  .team-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .consult-btn {
-    display: inline-flex; align-items: center; min-height: 44px;
-    font-size: 0.8125rem; font-weight: 500; text-decoration: none;
-    border-radius: 999px; padding: 10px 18px;
-    transition: background 220ms cubic-bezier(0.22,0.61,0.36,1), color 220ms;
-  }
-  .team-actions a:first-child {
-    background: var(--rr-rightrev-green); color: var(--rr-dark); border: 1px solid var(--rr-rightrev-green);
-  }
-  .team-actions a:first-child:hover { background: var(--rr-green); color: #fff; }
-  .team-actions a:last-child {
-    background: transparent; color: var(--rr-forest); border: 1px solid var(--rr-border);
-  }
-  .team-actions a:last-child:hover { background: var(--rr-light-green); color: var(--rr-forest); }
-  .team-bdr { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--rr-border); }
-
-  /* ─── Value boxes ─────────────────────────── */
-  .s-value-boxes { display: flex; flex-direction: column; gap: 16px; }
-  .value-box {
-    display: grid; grid-template-columns: 190px 1fr; align-items: stretch; gap: 0;
-    background: #fff; border: 3px solid var(--rr-border);
-    border-radius: 20px; padding: 0; overflow: hidden; box-shadow: var(--rr-shadow);
-  }
-  /* Number cell typography is intentionally small: the box's height
-     should always be driven by the white body copy on the right, not
-     by the number/caption on the left. If a future number or caption
-     runs long, shrink further here rather than letting the box grow
-     to fit it.
-     Number color is --rr-alert-red, a DELIBERATE EXCEPTION to the
-     brand palette, not an oversight. This section is the negative/
-     current-state half of the page (see the framing rule above), and
-     needs to read as "problem" instantly, more urgently than the
-     brand's own orange accent does. Earlier version of this rule used
-     --rr-orange (still used for "The Cost" text elsewhere on the
-     page) reasoning that green reads as success and works against
-     this section; that's still true, but red reads as alarm faster
-     and more universally than orange does, which is worth more here
-     than palette purity.
-     A shape-based treatment (top accent stripe + alert-triangle icon)
-     was tried and reverted per direct feedback, not because the
-     reasoning was wrong but because it didn't land visually. The
-     white card border was thickened (1px to 2px, then to 3px) instead, as a
-     simpler, cleaner way to make each box read as more prominent.
-     Keep the red exception SCOPED to exactly this module (the number
-     and caption), do not let it bleed into any other part of the page
-     (cost callouts, labels, anything else) or it stops being a
-     deliberate accent and starts looking like an inconsistent
-     palette. If a future brand refresh adds an official alert color,
-     replace --rr-alert-red's value and drop this comment. */
-  .value-number-cell {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 18px 16px; background: var(--rr-forest); color: #fff;
-  }
-  .value-number {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 2.375rem; line-height: 1.05; letter-spacing: -0.02em;
-    color: var(--rr-alert-red); font-variant-numeric: tabular-nums;
-    text-align: center; font-feature-settings: "tnum" 1;
-  }
-  .value-number-caption {
-    font-family: var(--rr-font-body); font-weight: 600;
-    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.09em;
-    color: rgba(255,255,255,0.72); text-align: center; margin-top: 6px;
-  }
-  .value-explain-cell { padding: 24px 30px; align-self: center; }
-  .value-explain-title { font-size: 1rem; font-weight: 700; color: var(--rr-dark); margin-bottom: 5px; }
-  .value-boxes-heading {
-    font-family: var(--rr-font-display); font-weight: 400;
-    font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.2em;
-    color: var(--rr-rightrev-green); margin: 4px 0 2px 4px;
-  }
-  .value-explain-text { font-size: 1rem; line-height: 1.55; color: var(--rr-gray); }
-
-  /* ─── Two-column row ──────────────────────── */
-  .s-two-col { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-items: stretch; }
-
-  /* ─── Pain / solve (numbered path) ────────── */
-  .pain-item {
-    display: grid; grid-template-columns: 32px 1fr; column-gap: 14px;
-    padding: 16px 0; border-top: 1px solid var(--rr-border); position: relative;
-  }
-  .pain-item:first-of-type { border-top: none; padding-top: 0; }
-  .pain-step-col { position: relative; display: flex; justify-content: center; }
-  .pain-step-num {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--rr-forest); color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--rr-font-display); font-weight: 700; font-size: 0.875rem;
-    position: relative; z-index: 1; flex-shrink: 0;
-  }
-  /* No connecting line between numbers on purpose: these are a
-     priority ranking (which issue costs the most), not sequential
-     build steps. A connecting line reads as a timeline/roadmap, which
-     would misrepresent this as an implementation order. */
-  .pain-signal-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .pain-icon { flex-shrink: 0; width: 18px; height: 18px; color: var(--rr-rightrev-green); }
-  .pain-signal {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.14em;
-    color: var(--rr-forest); margin-bottom: 0;
-  }
-  .pain-why { font-size: 1rem; line-height: 1.6; color: var(--rr-gray); margin-bottom: 10px; }
-  .pain-cost-label {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--rr-orange); margin-bottom: 4px;
-  }
-  .pain-cost {
-    background: rgba(166,94,23,0.10); border-left: 4px solid var(--rr-orange);
-    border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 10px;
-  }
-  .pain-cost-text { font-size: 1.0625rem; font-weight: 700; line-height: 1.45; color: var(--rr-orange); margin: 0; }
-  .pain-fix-label {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--rr-green); margin-bottom: 4px;
-  }
-  .pain-fix {
-    background: var(--rr-light-green); border-left: 4px solid var(--rr-green);
-    border-radius: 0 8px 8px 0; padding: 12px 16px;
-  }
-  .pain-fix-text { font-size: 1.0625rem; font-weight: 500; line-height: 1.5; color: var(--rr-forest); margin: 0; }
-
-  /* ─── Case study (dark card) ──────────────── */
-  .s-case-study {
-    position: relative; overflow: hidden;
-    background: var(--rr-forest); color: #fff;
-    border-radius: 20px; padding: 28px 30px;
-    display: flex; flex-direction: column; height: 100%;
-  }
-  .s-case-study .section-title { color: var(--rr-rightrev-green); }
-  .case-study-name { font-family: var(--rr-font-display); font-weight: 700; font-size: 1.75rem; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 16px; color: #fff; }
-  .case-study-section { margin-bottom: 16px; }
-  .case-study-label {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--rr-rightrev-green); margin-bottom: 5px;
-  }
-  .case-study-text { font-size: 1rem; line-height: 1.6; color: var(--rr-light-green); }
-  .case-study-btn {
-    margin-top: 4px; align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px;
-    font-size: 0.8125rem; font-weight: 500;
-    text-decoration: none; color: var(--rr-dark);
-    background: var(--rr-rightrev-green); border-radius: 999px; padding: 10px 20px;
-    transition: background 220ms cubic-bezier(0.22,0.61,0.36,1), color 220ms;
-  }
-  .case-study-btn:hover { background: #fff; color: var(--rr-forest); }
-  .case-study-followup {
-    margin-top: 24px; padding-top: 20px;
-    border-top: 1px solid var(--rr-border-on-dark);
-  }
-  .case-study-followup-title {
-    font-family: var(--rr-font-display); font-weight: 700;
-    font-size: 1.125rem; letter-spacing: -0.01em;
-    color: #fff; margin-bottom: 8px;
-  }
-  .case-study-followup-text { font-size: 0.9375rem; line-height: 1.55; color: var(--rr-light-green); margin-bottom: 16px; }
-  .case-study-followup-btn {
-    display: inline-flex; align-items: center; min-height: 44px;
-    font-size: 0.8125rem; font-weight: 500;
-    text-decoration: none; color: #fff;
-    background: transparent; border: 1px solid var(--rr-rightrev-green);
-    border-radius: 999px; padding: 10px 20px;
-    transition: background 220ms cubic-bezier(0.22,0.61,0.36,1), color 220ms;
-  }
-  .case-study-followup-btn:hover { background: var(--rr-rightrev-green); color: var(--rr-dark); }
-  .case-study-quote { display: flex; flex-direction: column; justify-content: center; border-left: 3px solid var(--rr-rightrev-green); padding-left: 16px; margin: 6px 0 20px; }
-  .case-study-quote-text { font-family: var(--rr-font-display); font-weight: 400; font-size: 1.5rem; font-style: normal; line-height: 1.1; letter-spacing: -0.02em; color: #fff; }
-  .case-study-quote-attribution { font-size: 0.6875rem; font-weight: 500; margin-top: 12px; color: rgba(241,255,238,0.82); }
-
-  /* ─── Audience rows ───────────────────────── */
-  .audience-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 4px; }
-  .audience-item { border-top: 1px solid var(--rr-border); padding-top: 16px; }
-  .audience-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .check-icon { flex-shrink: 0; width: 18px; height: 18px; }
-  .audience-item-title { font-family: var(--rr-font-body); font-size: 1rem; font-weight: 700; color: var(--rr-forest); margin-bottom: 0; }
-  .audience-item-text { font-size: 1rem; line-height: 1.55; color: var(--rr-gray); }
-
-  /* ─── Footer ──────────────────────────────── */
-  .s-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 8px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.18);
-  }
-  .footer-note {
-    font-family: var(--rr-font-display);
-    font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.24em;
-    color: rgba(241,255,238,0.72);
-  }
-
-  @media (max-width: 760px) {
-    .s-hero-row, .s-two-col, .audience-items { grid-template-columns: 1fr; }
-    .value-box { grid-template-columns: 1fr; gap: 12px; }
-    .title-headline { font-size: 34px; }
+  @media (max-width: 900px) {
+    [style*="grid-template-columns:repeat(3"],
+    [style*="minmax(0,1fr) minmax(0,1fr)"],
+    [style*="minmax(0,1.25fr)"] { grid-template-columns: 1fr !important; }
+    [style*="padding:38px 44px 34px 32px"],
+    [style*="padding:38px 32px 34px 44px"] { padding: 32px 24px !important; }
+    [style*="padding:52px 44px 46px"] { padding: 36px 24px !important; }
+    [style*="font:400 58px/0.9"] { font-size: 36px !important; }
   }
 </style>
 </head>
 <body>
-<div class="page">
 
-  
-  <div class="s-topbar">
-    <a href="https://www.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" rel="noopener"><img class="rr-logo" src="RIGHTREV_LOGO_PLACEHOLDER" alt="RightRev"></a>
-    <div class="topbar-tag">{{ACCOUNT_NAME}} Briefing</div>
+<div style="width:980px;max-width:100%;margin:0 auto;background:#fff;color:#081F17;font:400 16px/1.5 'Scto Grotesk A','Host Grotesk',sans-serif;-webkit-font-smoothing:antialiased">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:26px 44px 22px">
+    <a href="https://www.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" rel="noopener" style="display:block"><img src="RIGHTREV_LOGO_PLACEHOLDER" alt="RightRev" style="display:block;height:26px;width:auto"></a>
+    <div style="font:400 11px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.26em;color:#164234;border:1px solid rgba(8,31,23,.14);border-radius:999px;padding:8px 15px 7px">{{ACCOUNT_NAME}} Briefing</div>
   </div>
 
-  
-  <div class="s-hero-row">
-    <div class="s-title-hero">
-      <div class="title-eyebrow">{{ACCOUNT_TAGLINE}}</div>
-      <h1 class="title-headline">{{VALUE_DRIVER}} for <span class="acct-highlight">{{ACCOUNT_NAME}}</span></h1>
-      <div class="ae-quote">
-        <div class="quote-text">{{AE_QUOTE}}</div>
+  <div style="background:#164234;color:#fff;padding:52px 44px 46px;position:relative;overflow:hidden">
+    <div style="position:relative;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;align-items:end">
+      <div>
+        <div style="font:400 12px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.28em;color:#69C04B;margin-bottom:20px">{{ACCOUNT_TAGLINE}}</div>
+        <h1 style="margin:0;font:400 58px/0.9 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.03em;text-wrap:balance;overflow-wrap:anywhere">{{VALUE_DRIVER}} for <span style="color:#69C04B">{{ACCOUNT_NAME}}</span></h1>
       </div>
-    </div>
-
-    
-    <div class="s-account-team">
-      <div class="section-title">Your Account Team</div>
-      <div class="team-ae">
-        <div class="team-role-tag">Account Executive · RightRev</div>
-        <div class="ae-name">{{REP_NAME}}</div>
-        <div class="ae-email">{{REP_EMAIL}}</div>
-        <div class="team-actions">
-          <a class="consult-btn" href="{{REP_MEETING_LINK}}">Let's Chat</a>
-          <a class="consult-btn" href="{{REP_LINKEDIN}}" target="_blank">Connect on LinkedIn</a>
-        </div>
-      </div>
-      <div class="team-bdr">
-        <div class="team-role-tag">BDR · RightRev</div>
-        <div class="ae-name">Rheymar Barroga</div>
-        <div class="ae-email">rheymar.b@rightrev.com</div>
+      <div style="border-left:2px solid #69C04B;padding-left:22px">
+        <div style="font:italic 400 17px/1.6 'Scto Grotesk A','Host Grotesk',sans-serif;color:#F1FFEE">{{AE_QUOTE}}</div>
       </div>
     </div>
   </div>
 
-  
-  <div class="value-boxes-heading">What's At Stake for {{ACCOUNT_NAME}}</div>
-  <div class="s-value-boxes">
-    <div class="value-box">
-      <div class="value-number-cell">
-        <div class="value-number">{{VALUE_BOX_1_NUMBER}}</div>
-        <div class="value-number-caption">{{VALUE_BOX_1_CAPTION}}</div>
-      </div>
-      <div class="value-explain-cell">
-        <div class="value-explain-title">{{VALUE_BOX_1_TITLE}}</div>
-        <div class="value-explain-text">{{VALUE_BOX_1_TEXT}}</div>
-      </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);padding:24px 44px;gap:0;border-bottom:1px solid #E8E8E8;background:#F1FFEE">
+    <div style="padding-right:24px">
+      <div style="font:400 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#078732;margin-bottom:7px">Account Executive · RightRev</div>
+      <div style="font-size:17px;font-weight:500;color:#081F17">{{REP_NAME}}</div>
+      <div style="font-size:15px;color:#078732;margin-top:2px">{{REP_EMAIL}}</div>
     </div>
-    <div class="value-box">
-      <div class="value-number-cell">
-        <div class="value-number">{{VALUE_BOX_2_NUMBER}}</div>
-        <div class="value-number-caption">{{VALUE_BOX_2_CAPTION}}</div>
-      </div>
-      <div class="value-explain-cell">
-        <div class="value-explain-title">{{VALUE_BOX_2_TITLE}}</div>
-        <div class="value-explain-text">{{VALUE_BOX_2_TEXT}}</div>
-      </div>
+    <div style="padding-right:24px;border-left:1px solid rgba(8,31,23,.12);padding-left:24px">
+      <div style="font:400 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#078732;margin-bottom:7px">BDR · RightRev</div>
+      <div style="font-size:17px;font-weight:500;color:#081F17">Rheymar Barroga</div>
+      <div style="font-size:15px;color:#078732;margin-top:2px">rheymar.b@rightrev.com</div>
     </div>
-    <div class="value-box">
-      <div class="value-number-cell">
-        <div class="value-number">{{VALUE_BOX_3_NUMBER}}</div>
-        <div class="value-number-caption">{{VALUE_BOX_3_CAPTION}}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
+      <a href="{{REP_MEETING_LINK}}" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;border-radius:999px;padding:10px 18px;background:#69C04B;color:#081F17;border:1px solid #69C04B" class="hv1">Let's Chat</a>
+      <a href="{{REP_LINKEDIN}}" target="_blank" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;border-radius:999px;padding:10px 18px;background:transparent;color:#164234;border:1px solid rgba(8,31,23,.16)" class="hv2">Connect on LinkedIn</a>
+    </div>
+  </div>
+
+  <div style="padding:38px 44px 34px;border-bottom:1px solid #E8E8E8">
+    <div style="font:700 13px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#164234;margin-bottom:24px;overflow-wrap:anywhere">What's At Stake for {{ACCOUNT_NAME}}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+      <div style="padding-right:30px">
+        <div style="font:700 52px/1 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.02em;color:#E5342A;font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{VALUE_BOX_1_NUMBER}}</div>
+        <div style="font:600 11px/1.3 'Scto Grotesk A','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.09em;color:#3C4344;margin:10px 0 14px;overflow-wrap:anywhere">{{VALUE_BOX_1_CAPTION}}</div>
+        <div style="font-size:16px;font-weight:700;color:#081F17;margin-bottom:5px;overflow-wrap:anywhere">{{VALUE_BOX_1_TITLE}}</div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344;overflow-wrap:anywhere">{{VALUE_BOX_1_TEXT}}</div>
       </div>
-      <div class="value-explain-cell">
-        <div class="value-explain-title">{{VALUE_BOX_3_TITLE}}</div>
-        <div class="value-explain-text">{{VALUE_BOX_3_TEXT}}</div>
+      <div style="padding:0 30px;border-left:1px solid #E8E8E8">
+        <div style="font:700 52px/1 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.02em;color:#E5342A;font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{VALUE_BOX_2_NUMBER}}</div>
+        <div style="font:600 11px/1.3 'Scto Grotesk A','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.09em;color:#3C4344;margin:10px 0 14px;overflow-wrap:anywhere">{{VALUE_BOX_2_CAPTION}}</div>
+        <div style="font-size:16px;font-weight:700;color:#081F17;margin-bottom:5px;overflow-wrap:anywhere">{{VALUE_BOX_2_TITLE}}</div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344;overflow-wrap:anywhere">{{VALUE_BOX_2_TEXT}}</div>
+      </div>
+      <div style="padding-left:30px;border-left:1px solid #E8E8E8">
+        <div style="font:700 52px/1 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.02em;color:#E5342A;font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{VALUE_BOX_3_NUMBER}}</div>
+        <div style="font:600 11px/1.3 'Scto Grotesk A','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.09em;color:#3C4344;margin:10px 0 14px;overflow-wrap:anywhere">{{VALUE_BOX_3_CAPTION}}</div>
+        <div style="font-size:16px;font-weight:700;color:#081F17;margin-bottom:5px;overflow-wrap:anywhere">{{VALUE_BOX_3_TITLE}}</div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344;overflow-wrap:anywhere">{{VALUE_BOX_3_TEXT}}</div>
       </div>
     </div>
   </div>
 
-  
-  <div class="s-two-col">
-    <div class="s-pain-solve">
-      <div class="section-title">What Matters Most</div>
-      <div class="pain-solve-intro">Of everything at stake above, here's what matters most, ranked by where the cost is highest today.</div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid #E8E8E8">
 
-      <div class="pain-item">
-        <div class="pain-step-col"><div class="pain-step-num">1</div></div>
-        <div class="pain-content">
-          <div class="pain-signal-row">{{PAIN_1_ICON}}<div class="pain-signal">{{PAIN_1_SIGNAL}}</div></div>
-          <div class="pain-why">{{PAIN_1_WHY}}</div>
-          <div class="pain-cost">
-            <div class="pain-cost-label">The Cost</div>
-            <div class="pain-cost-text">{{PAIN_1_COST}}</div>
+    <div style="padding:38px 32px 34px 44px">
+      <div style="font:700 13px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#164234;margin-bottom:6px">What Matters Most</div>
+      <div style="font-size:15px;line-height:1.5;color:#3C4344;margin-bottom:22px">Of everything at stake above, here's what matters most, ranked by where the cost is highest today.</div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:12px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#164234;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px/1 'FK Display','Host Grotesk',sans-serif">1</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">{{PAIN_1_ICON}}<div style="font:700 13px/1.3 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.13em;color:#164234;overflow-wrap:anywhere">{{PAIN_1_SIGNAL}}</div></div>
+          <div style="font-size:15px;line-height:1.55;color:#3C4344;margin:8px 0 12px;overflow-wrap:anywhere">{{PAIN_1_WHY}}</div>
+          <div style="background:rgba(166,94,23,.09);border-left:4px solid #A65E17;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#A65E17;margin-bottom:6px">The Cost</div>
+            <div style="font-size:15px;font-weight:700;line-height:1.45;color:#A65E17;overflow-wrap:anywhere">{{PAIN_1_COST}}</div>
           </div>
-          <div class="pain-fix">
-            <div class="pain-fix-label">How RightRev solves it</div>
-            <div class="pain-fix-text">{{PAIN_1_FIX}}</div>
+          <div style="background:#F1FFEE;border-left:4px solid #078732;border-radius:0 8px 8px 0;padding:12px 16px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#078732;margin-bottom:6px">How RightRev solves it</div>
+            <div style="font-size:15px;font-weight:500;line-height:1.5;color:#164234;overflow-wrap:anywhere">{{PAIN_1_FIX}}</div>
           </div>
         </div>
       </div>
-
-      <div class="pain-item">
-        <div class="pain-step-col"><div class="pain-step-num">2</div></div>
-        <div class="pain-content">
-          <div class="pain-signal-row">{{PAIN_2_ICON}}<div class="pain-signal">{{PAIN_2_SIGNAL}}</div></div>
-          <div class="pain-why">{{PAIN_2_WHY}}</div>
-          <div class="pain-cost">
-            <div class="pain-cost-label">The Cost</div>
-            <div class="pain-cost-text">{{PAIN_2_COST}}</div>
+      <div style="display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:12px;border-top:1px solid #E8E8E8;padding-top:20px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#164234;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px/1 'FK Display','Host Grotesk',sans-serif">2</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">{{PAIN_2_ICON}}<div style="font:700 13px/1.3 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.13em;color:#164234;overflow-wrap:anywhere">{{PAIN_2_SIGNAL}}</div></div>
+          <div style="font-size:15px;line-height:1.55;color:#3C4344;margin:8px 0 12px;overflow-wrap:anywhere">{{PAIN_2_WHY}}</div>
+          <div style="background:rgba(166,94,23,.09);border-left:4px solid #A65E17;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#A65E17;margin-bottom:6px">The Cost</div>
+            <div style="font-size:15px;font-weight:700;line-height:1.45;color:#A65E17;overflow-wrap:anywhere">{{PAIN_2_COST}}</div>
           </div>
-          <div class="pain-fix">
-            <div class="pain-fix-label">How RightRev solves it</div>
-            <div class="pain-fix-text">{{PAIN_2_FIX}}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="pain-item">
-        <div class="pain-step-col"><div class="pain-step-num">3</div></div>
-        <div class="pain-content">
-          <div class="pain-signal-row">{{PAIN_3_ICON}}<div class="pain-signal">{{PAIN_3_SIGNAL}}</div></div>
-          <div class="pain-why">{{PAIN_3_WHY}}</div>
-          <div class="pain-cost">
-            <div class="pain-cost-label">The Cost</div>
-            <div class="pain-cost-text">{{PAIN_3_COST}}</div>
-          </div>
-          <div class="pain-fix">
-            <div class="pain-fix-label">How RightRev solves it</div>
-            <div class="pain-fix-text">{{PAIN_3_FIX}}</div>
+          <div style="background:#F1FFEE;border-left:4px solid #078732;border-radius:0 8px 8px 0;padding:12px 16px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#078732;margin-bottom:6px">How RightRev solves it</div>
+            <div style="font-size:15px;font-weight:500;line-height:1.5;color:#164234;overflow-wrap:anywhere">{{PAIN_2_FIX}}</div>
           </div>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:12px;border-top:1px solid #E8E8E8;padding-top:20px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#164234;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px/1 'FK Display','Host Grotesk',sans-serif">3</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">{{PAIN_3_ICON}}<div style="font:700 13px/1.3 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.13em;color:#164234;overflow-wrap:anywhere">{{PAIN_3_SIGNAL}}</div></div>
+          <div style="font-size:15px;line-height:1.55;color:#3C4344;margin:8px 0 12px;overflow-wrap:anywhere">{{PAIN_3_WHY}}</div>
+          <div style="background:rgba(166,94,23,.09);border-left:4px solid #A65E17;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#A65E17;margin-bottom:6px">The Cost</div>
+            <div style="font-size:15px;font-weight:700;line-height:1.45;color:#A65E17;overflow-wrap:anywhere">{{PAIN_3_COST}}</div>
+          </div>
+          <div style="background:#F1FFEE;border-left:4px solid #078732;border-radius:0 8px 8px 0;padding:12px 16px">
+            <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#078732;margin-bottom:6px">How RightRev solves it</div>
+            <div style="font-size:15px;font-weight:500;line-height:1.5;color:#164234;overflow-wrap:anywhere">{{PAIN_3_FIX}}</div>
+          </div>
+        </div>
+      </div>
+      </div>
     </div>
 
-    
-    <div class="s-case-study">
-      <div class="section-title">Recommended Case Study</div>
-      <div class="case-study-name">{{CASE_STUDY_COMPANY}}</div>
-      <div class="case-study-section">
-        <div class="case-study-label">{{ACCOUNT_NAME}}'s Challenge:</div>
-        <div class="case-study-text">{{CASE_STUDY_CHALLENGE}}</div>
+    <div style="background:#164234;color:#fff;padding:38px 44px 34px 32px;position:relative;overflow:hidden">
+      <div style="position:relative;min-width:0">
+        <div style="font:700 13px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#69C04B;margin-bottom:14px">Recommended Case Study</div>
+        <div style="font:700 32px/0.95 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.03em;margin-bottom:20px;overflow-wrap:anywhere">{{CASE_STUDY_COMPANY}}</div>
+        <div style="margin-bottom:16px">
+          <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#69C04B;margin-bottom:6px;overflow-wrap:anywhere">{{ACCOUNT_NAME}}'s Challenge:</div>
+          <div style="font-size:15px;line-height:1.6;color:#F1FFEE;overflow-wrap:anywhere">{{CASE_STUDY_CHALLENGE}}</div>
+        </div>
+        <div style="margin-bottom:20px">
+          <div style="font:700 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.22em;color:#69C04B;margin-bottom:6px;overflow-wrap:anywhere">How We Helped {{CASE_STUDY_COMPANY}} Do the Same:</div>
+          <div style="font-size:15px;line-height:1.6;color:#F1FFEE;overflow-wrap:anywhere">{{CASE_STUDY_PROOF}}</div>
+        </div>
+        <div style="border-left:3px solid #69C04B;padding-left:16px;margin-bottom:22px">
+          <div style="font:400 26px/1.1 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.02em;color:#fff;overflow-wrap:anywhere">{{CASE_STUDY_QUOTE}}</div>
+          <div style="font-size:12px;font-weight:500;margin-top:12px;color:rgba(241,255,238,.82)">{{CASE_STUDY_QUOTE_ATTRIBUTION}}</div>
+        </div>
+        <a href="{{CASE_STUDY_URL}}?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;color:#081F17;background:#69C04B;border-radius:999px;padding:10px 20px" class="hv3">{{CASE_STUDY_BUTTON_LABEL}}</a>
+        <div style="margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.22)">
+          <div style="font:700 12px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#69C04B;margin-bottom:10px">Revenue Complexity Assessment</div>
+          <div style="font:700 20px/1.2 'FK Display','Host Grotesk',sans-serif;letter-spacing:-.01em;color:#fff;margin-bottom:8px">Want to see for yourself?</div>
+          <div style="font-size:15px;line-height:1.55;color:#F1FFEE;margin-bottom:18px;overflow-wrap:anywhere">{{ASSESSMENT_CTA_TEXT}}</div>
+          <a href="https://calculator.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;color:#fff;background:transparent;border:1px solid #69C04B;border-radius:999px;padding:10px 20px" class="hv4">Take the Assessment</a>
+        </div>
       </div>
-      <div class="case-study-section">
-        <div class="case-study-label">How We Helped {{CASE_STUDY_COMPANY}} Do the Same:</div>
-        <div class="case-study-text">{{CASE_STUDY_PROOF}}</div>
+    </div>
+
+  </div>
+
+  <div style="padding:38px 44px 34px;border-bottom:1px solid #E8E8E8">
+    <div style="font:700 13px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#164234;margin-bottom:22px">How RightRev Helps Finance Teams Drive Growth</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">Launch any revenue model faster</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{FINANCE_MONETIZATION_TEXT}}</div>
       </div>
-      <div class="case-study-quote">
-        <div class="case-study-quote-text">{{CASE_STUDY_QUOTE}}</div>
-        <div class="case-study-quote-attribution">{{CASE_STUDY_QUOTE_ATTRIBUTION}}</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">Build audit confidence</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{FINANCE_AUDIT_TEXT}}</div>
       </div>
-      <a class="case-study-btn" href="{{CASE_STUDY_URL}}?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank">{{CASE_STUDY_BUTTON_LABEL}}</a>
-      <div class="case-study-followup">
-        <div class="section-title">Revenue Complexity Assessment</div>
-        <div class="case-study-followup-title">Want to see for yourself?</div>
-        <div class="case-study-followup-text">{{ASSESSMENT_CTA_TEXT}}</div>
-        <a class="case-study-followup-btn" href="https://calculator.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank">Take the Assessment</a>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">Create a defensible system of record</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{FINANCE_VALUATION_TEXT}}</div>
+      </div>
+    </div>
+    <div style="height:1px;background:#E8E8E8;margin:30px 0 28px"></div>
+    <div style="font:700 13px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.2em;color:#164234;margin-bottom:22px">How RightRev Helps Accounting Teams Keep Up</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">{{ACCOUNTING_STATUS_QUO_TITLE}}</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{ACCOUNTING_STATUS_QUO_TEXT}}</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">{{ACCOUNTING_CONFLICT_TITLE}}</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{ACCOUNTING_CONFLICT_TEXT}}</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;min-width:0"><svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#69C04B"></circle><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font-size:16px;font-weight:700;color:#164234;min-width:0;overflow-wrap:anywhere">{{ACCOUNTING_RESOLUTION_TITLE}}</div></div>
+        <div style="font-size:15px;line-height:1.55;color:#3C4344">{{ACCOUNTING_RESOLUTION_TEXT}}</div>
       </div>
     </div>
   </div>
 
-  
-  <div class="s-audience-row">
-    <div class="section-title">How RightRev Helps Finance Teams Drive Growth</div>
-    <div class="audience-items">
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Launch any revenue model faster</div></div>
-        <div class="audience-item-text">{{FINANCE_MONETIZATION_TEXT}}</div>
-      </div>
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Build audit confidence</div></div>
-        <div class="audience-item-text">{{FINANCE_AUDIT_TEXT}}</div>
-      </div>
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">Create a defensible system of record</div></div>
-        <div class="audience-item-text">{{FINANCE_VALUATION_TEXT}}</div>
-      </div>
-    </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 44px 26px">
+    <a href="https://www.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" rel="noopener" style="display:block"><img src="RIGHTREV_LOGO_PLACEHOLDER" alt="RightRev" style="display:block;height:20px;width:auto;opacity:.9"></a>
+    <div style="font:400 10px/1 'FK Display','Host Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.24em;color:rgba(8,31,23,.55)">Revenue Recognition Automation</div>
   </div>
 
-  
-  <div class="s-audience-row">
-    <div class="section-title">How RightRev Helps Accounting Teams Keep Up</div>
-    <div class="audience-items">
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_STATUS_QUO_TITLE}}</div></div>
-        <div class="audience-item-text">{{ACCOUNTING_STATUS_QUO_TEXT}}</div>
-      </div>
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_CONFLICT_TITLE}}</div></div>
-        <div class="audience-item-text">{{ACCOUNTING_CONFLICT_TEXT}}</div>
-      </div>
-      <div class="audience-item">
-        <div class="audience-title-row"><svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#69C04B"/><path d="M5.5 10.3l2.8 2.8 6-6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="audience-item-title">{{ACCOUNTING_RESOLUTION_TITLE}}</div></div>
-        <div class="audience-item-text">{{ACCOUNTING_RESOLUTION_TEXT}}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="s-footer">
-    <a href="https://www.rightrev.com/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content={{ACCOUNT_NAME}}" target="_blank" rel="noopener"><img class="rr-logo rr-logo--foot" src="RIGHTREV_LOGO_PLACEHOLDER" alt="RightRev"></a>
-    <div class="footer-note">Revenue Recognition Automation</div>
-  </div>
-
-</div>
 </body>
 </html>
 `,
