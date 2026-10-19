@@ -41,6 +41,16 @@ exports.handler = async (event) => {
   const slug = accountName.toLowerCase().replace(/[^a-z0-9]/g, '');
   console.log('Account name:', accountName, '| Slug:', slug);
 
+  // Only these AEs get their own meeting link; everyone else goes to the demo request page.
+  const MEETING_AES = ['adam mcclure', 'madison sobaski', 'dylan kay'];
+  const repName = (data['AccountOwnerName'] || '').trim().toLowerCase();
+  const repMeetingLink = (data['OwnerMeetingLink'] || '').trim();
+  const useRepLink = MEETING_AES.includes(repName) && !!repMeetingLink;
+  const demoLink = `https://www.rightrev.com/request-a-demo/?utm_medium=referral&utm_source=netlify&utm_campaign=custom-lp&utm_content=${encodeURIComponent(accountName)}`;
+  const meetingLink = useRepLink ? repMeetingLink : demoLink;
+  const meetingLabel = useRepLink ? "Let's Chat" : 'Request a Demo';
+  console.log('Rep:', repName, '| CTA:', meetingLabel, '|', meetingLink);
+
   console.log('Starting Claude call. Data keys:', Object.keys(data));
 
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -111,7 +121,7 @@ FIELD MAPPING FROM CLAY DATA:
 - {{AE_QUOTE}} — first-person quote from the rep about the account's top pain
 - {{REP_NAME}} — "AccountOwnerName" field
 - {{REP_EMAIL}} — "AccountOwnerEmail" field  
-- {{REP_MEETING_LINK}} — "OwnerMeetingLink" field
+- REP_MEETING_LINK_PLACEHOLDER and REP_MEETING_LABEL_PLACEHOLDER — leave both exactly as-is; they are filled in automatically after generation. Do not add UTM parameters to the link.
 - {{REP_LINKEDIN}} — "AccountOwnerLinkedIn" field
 - {{VALUE_BOX_1_NUMBER}}, {{VALUE_BOX_1_CAPTION}}, {{VALUE_BOX_1_TITLE}}, {{VALUE_BOX_1_TEXT}} — capability stat box
 - {{VALUE_BOX_2_NUMBER}}, {{VALUE_BOX_2_CAPTION}}, {{VALUE_BOX_2_TITLE}}, {{VALUE_BOX_2_TEXT}} — account-specific count box
@@ -370,7 +380,7 @@ DETAILED PER-SECTION INSTRUCTIONS (read these carefully and follow them exactly 
       AE block (pulled from Clay, per-account):
         {{REP_NAME}}          — Account Owner Name
         {{REP_EMAIL}}         — Account Owner Email
-        {{REP_MEETING_LINK}}  — Account Owner Meeting Link → button "Let's Chat"
+        REP_MEETING_LINK_PLACEHOLDER / REP_MEETING_LABEL_PLACEHOLDER — filled in by code after generation, leave as-is
         {{REP_LINKEDIN}}      — Account Owner LinkedIn → button "Connect on LinkedIn"
 
       BDR block (stacked below AE, always constant — never pulled from Clay):
@@ -1050,7 +1060,7 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
       <div style="font-size:15px;color:#078732;margin-top:2px">rheymar.b@rightrev.com</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
-      <a href="{{REP_MEETING_LINK}}" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;border-radius:999px;padding:10px 18px;background:#69C04B;color:#081F17;border:1px solid #69C04B" class="hv1">Let's Chat</a>
+      <a href="REP_MEETING_LINK_PLACEHOLDER" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;border-radius:999px;padding:10px 18px;background:#69C04B;color:#081F17;border:1px solid #69C04B" class="hv1">REP_MEETING_LABEL_PLACEHOLDER</a>
       <a href="{{REP_LINKEDIN}}" target="_blank" style="display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:500;text-decoration:none;border-radius:999px;padding:10px 18px;background:transparent;color:#164234;border:1px solid rgba(8,31,23,.16)" class="hv2">Connect on LinkedIn</a>
     </div>
   </div>
@@ -1230,7 +1240,11 @@ TEMPLATE (fill in the placeholders below and return this structure, and only thi
   if (lines[0].startsWith('SLUG:')) {
     startLine = (lines[1] !== undefined && lines[1].trim() === '') ? 2 : 1;
   }
-  const html = lines.slice(startLine).join('\n').trim().replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64).replace('<style>', `<style>${FONT_CSS}`);
+  const html = lines.slice(startLine).join('\n').trim()
+    .replace(/RIGHTREV_LOGO_PLACEHOLDER/g, LOGO_B64)
+    .replace(/REP_MEETING_LINK_PLACEHOLDER/g, meetingLink)
+    .replace(/REP_MEETING_LABEL_PLACEHOLDER/g, meetingLabel)
+    .replace('<style>', `<style>${FONT_CSS}`);
   console.log('HTML starts with:', html.slice(0, 100));
   console.log('HTML ends with:', html.slice(-100));
 
